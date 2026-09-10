@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Offline study companion for Oracle Certified Professional Java SE 17">
+  <title>OCP Java 17 Prep</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#/">OCP <span>Java 17</span> Prep</a>
+    <nav aria-label="Main navigation">
+      <a href="#/">Dashboard</a>
+      <label class="chapter-nav">Chapters
+        <select id="chapterSelect" aria-label="Choose a chapter"><option value="">Choose…</option></select>
+      </label>
+      <a href="#/exam">Mock exam</a>
+      <a href="#/flashcards">Flashcards</a>
+      <a href="#/cheatsheet">Cheat sheet</a>
+    </nav>
+    <form id="searchForm" class="search-form"><label class="sr-only" for="searchInput">Search</label><input id="searchInput" type="search" placeholder="Search…"><button>⌕</button></form>
+    <button id="themeToggle" class="icon-button" title="Toggle theme" aria-label="Toggle theme">◐</button>
+    <button id="settingsButton" class="icon-button" title="Settings" aria-label="Settings">⚙</button>
+  </header>
+  <main id="app" class="container" tabindex="-1"></main>
+  <footer class="container footer"><span>OCP Java SE 17 (1Z0-829)</span><span>Offline-first study companion</span></footer>
+  <script src="data/index.js"></script>
+  <script src="data/ch03.js"></script>
+  <script src="data/cheatsheet.js"></script>
+  <script src="js/highlight.js"></script>
+  <script src="js/md.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/quiz.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
