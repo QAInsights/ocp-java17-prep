@@ -10,7 +10,12 @@ const root = path.resolve(
   "..",
 );
 const context = vm.createContext({ window: {}, console, JSON, Math });
-for (const file of ["data/index.js", "data/ch03.js", "data/cheatsheet.js"]) {
+const chapterFiles = fs
+  .readdirSync(path.join(root, "data"))
+  .filter((f) => /^ch\d+\.js$/.test(f))
+  .sort()
+  .map((f) => "data/" + f);
+for (const file of ["data/index.js", ...chapterFiles, "data/cheatsheet.js"]) {
   vm.runInContext(fs.readFileSync(path.join(root, file), "utf8"), context, {
     filename: file,
   });
