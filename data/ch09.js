@@ -9,55 +9,55 @@ OCP.registerChapter({
     {
       id: 'arrays-lists',
       title: 'Arrays, List factories, and mutability',
-      md: `Arrays have a fixed length, a reifiable runtime component type, and the field \`length\). Lists use methods such as \`size()\), \`get()\), and \`add()\). Arrays are covariant: a \`String[]\) can be assigned to \`Object[]\), but storing a non-String then fails with \`ArrayStoreException\). Generic collections are invariant: \`List<String>\) is not a \`List<Object>\).
+      md: `Arrays have a fixed length, a reifiable runtime component type, and the field \`length\`. Lists use methods such as \`size()\`, \`get()\`, and \`add()\`. Arrays are covariant: a \`String[]\` can be assigned to \`Object[]\`, but storing a non-String then fails with \`ArrayStoreException\`. Generic collections are invariant: \`List<String>\` is not a \`List<Object>\`.
 
 | Factory or class | Size | Modification |
 |---|---|---|
-| \`List.of\`, \`List.copyOf\) | fixed | unmodifiable; null rejected |
-| \`Arrays.asList(array)\) | fixed | set allowed and writes through; add/remove unsupported |
-| \`ArrayList\) | resizable | fast indexed access; permits null |
-| \`LinkedList\) | resizable | efficient ends; indexed access traverses |
+| \`List.of\`, \`List.copyOf\` | fixed | unmodifiable; null rejected |
+| \`Arrays.asList(array)\` | fixed | set allowed and writes through; add/remove unsupported |
+| \`ArrayList\` | resizable | fast indexed access; permits null |
+| \`LinkedList\` | resizable | efficient ends; indexed access traverses |
 
-\`List.of\) and \`copyOf\) make unmodifiable lists. \`copyOf\) also makes a snapshot: later changes to the source list are not reflected. \`Arrays.asList\) is a fixed-size view backed by the array, so \`set\) changes the array. \`Collections.unmodifiableList\) is an unmodifiable view, not a snapshot; changes through the original list remain visible.`,
+\`List.of\` and \`copyOf\` make unmodifiable lists. \`copyOf\` also makes a snapshot: later changes to the source list are not reflected. \`Arrays.asList\` is a fixed-size view backed by the array, so \`set\` changes the array. \`Collections.unmodifiableList\` is an unmodifiable view, not a snapshot; changes through the original list remain visible.`,
     },
     {
       id: 'sets-maps',
       title: 'Set and Map implementations',
-      md: `A \`HashSet\) uses hashing and has no encounter-order guarantee. \`LinkedHashSet\) preserves insertion order. \`TreeSet\) keeps sorted order using natural ordering or a supplied \`Comparator\). A sorted set treats elements as duplicates when comparison returns zero, even if \`equals\) is false.
+      md: `A \`HashSet\` uses hashing and has no encounter-order guarantee. \`LinkedHashSet\` preserves insertion order. \`TreeSet\` keeps sorted order using natural ordering or a supplied \`Comparator\`. A sorted set treats elements as duplicates when comparison returns zero, even if \`equals\` is false.
 
 | Map | Ordering |
 |---|---|
-| \`HashMap\) | no guaranteed order |
-| \`LinkedHashMap\) | insertion order by default; can be access-ordered |
-| \`TreeMap\) | sorted by keys |
+| \`HashMap\` | no guaranteed order |
+| \`LinkedHashMap\` | insertion order by default; can be access-ordered |
+| \`TreeMap\` | sorted by keys |
 
-Important map operations include \`put\), \`putIfAbsent\), \`getOrDefault\), \`merge\), \`compute\), \`computeIfAbsent\), \`computeIfPresent\), \`replace\), \`replaceAll\), and \`forEach\). \`put\) returns the previous value or null. \`merge(k, value, fn)\) inserts value for an absent key; for a present key it combines old and new values. If the remapping function returns null, the key is removed.
+Important map operations include \`put\`, \`putIfAbsent\`, \`getOrDefault\`, \`merge\`, \`compute\`, \`computeIfAbsent\`, \`computeIfPresent\`, \`replace\`, \`replaceAll\`, and \`forEach\`. \`put\` returns the previous value or null. \`merge(k, value, fn)\` inserts value for an absent key; for a present key it combines old and new values. If the remapping function returns null, the key is removed.
 
-\`Map.of\) rejects null keys/values and duplicate keys with \`IllegalArgumentException\). The \`Map.Entry\) view from \`entrySet()\) is the normal way to iterate keys and values together.`,
+\`Map.of\` rejects null keys/values and duplicate keys with \`IllegalArgumentException\`. The \`Map.Entry\` view from \`entrySet()\` is the normal way to iterate keys and values together.`,
     },
     {
       id: 'deque-iterators',
       title: 'Deque, Queue, and Iterator operations',
-      md: `A \`Deque\) can be used as both queue and stack:
+      md: `A \`Deque\` can be used as both queue and stack:
 
 | Operation | Empty result | End |
 |---|---|---|
-| \`offer\), \`poll\), \`peek\) | false, null, null | queue-style |
-| \`add\), \`remove\), \`element\) | exception | queue-style |
-| \`push\), \`pop\), \`peek\) | pop exception, null | stack/front |
+| \`offer\`, \`poll\`, \`peek\` | false, null, null | queue-style |
+| \`add\`, \`remove\`, \`element\` | exception | queue-style |
+| \`push\`, \`pop\`, \`peek\` | pop exception, null | stack/front |
 
-\`addFirst/addLast\), \`offerFirst/offerLast\), \`removeFirst/removeLast\), \`pollFirst/pollLast\), \`getFirst/getLast\), and \`peekFirst/peekLast\) make the end explicit. \`ArrayDeque\) does not permit null.
+\`addFirst/addLast\`, \`offerFirst/offerLast\`, \`removeFirst/removeLast\`, \`pollFirst/pollLast\`, \`getFirst/getLast\`, and \`peekFirst/peekLast\` make the end explicit. \`ArrayDeque\` does not permit null.
 
-An \`Iterator\) can remove the last element returned by its own \`next()\) using \`iterator.remove()\). Calling remove before next or twice for one next is illegal. Most collection iterators are fail-fast: structural modification through the collection while iterating may throw \`ConcurrentModificationException\). \`removeIf\) is the safe bulk-removal method for a predicate.`,
+An \`Iterator\` can remove the last element returned by its own \`next()\` using \`iterator.remove()\`. Calling remove before next or twice for one next is illegal. Most collection iterators are fail-fast: structural modification through the collection while iterating may throw \`ConcurrentModificationException\`. \`removeIf\` is the safe bulk-removal method for a predicate.`,
     },
     {
       id: 'ordering-search',
       title: 'Comparable, Comparator, sorting, and searching',
-      md: `\`Comparable<T>\) supplies an object’s natural order through \`compareTo\). \`Comparator<T>\) supplies an external order and can be passed to sorting and sorted collections. A \`TreeSet\) or \`TreeMap\) needs comparable keys/elements or a comparator; adding a non-comparable type without one throws \`ClassCastException\).
+      md: `\`Comparable<T>\` supplies an object’s natural order through \`compareTo\`. \`Comparator<T>\` supplies an external order and can be passed to sorting and sorted collections. A \`TreeSet\` or \`TreeMap\` needs comparable keys/elements or a comparator; adding a non-comparable type without one throws \`ClassCastException\`.
 
-\`Collections.sort(list)\` uses natural order; the overload accepting a comparator uses that comparator. \`List.sort\), \`Arrays.sort\), and stream \`sorted\) follow the same ordering concepts. Object sorting is stable: equal keys retain their prior relative order. \`Collections.reverse\), \`min\), \`max\), \`frequency\), \`fill\), and \`binarySearch\) are common utilities.
+\`Collections.sort(list)\` uses natural order; the overload accepting a comparator uses that comparator. \`List.sort\`, \`Arrays.sort\`, and stream \`sorted\` follow the same ordering concepts. Object sorting is stable: equal keys retain their prior relative order. \`Collections.reverse\`, \`min\`, \`max\`, \`frequency\`, \`fill\`, and \`binarySearch\` are common utilities.
 
-\`Collections.binarySearch\) requires a sorted list using the same ordering. When not found, it returns \`-(insertion point) - 1\). A negative result can therefore recover the insertion point as \`-result - 1\). Sorting a list after searching with a different order invalidates the assumption.`,
+\`Collections.binarySearch\` requires a sorted list using the same ordering. When not found, it returns \`-(insertion point) - 1\`. A negative result can therefore recover the insertion point as \`-result - 1\`. Sorting a list after searching with a different order invalidates the assumption.`,
     },
     {
       id: 'generic-types',
@@ -73,22 +73,22 @@ class Box<T> {
 static <T> T first(List<T> values) { return values.get(0); }
 \`\`\`
 
-The method type parameter appears before the return type. Bounds use \`<T extends Number>\); multiple bounds place the class first and interfaces after it: \`<T extends Number & Comparable<T>>\). Type arguments cannot be primitive types, so use \`List<Integer>\), not \`List<int>\).
+The method type parameter appears before the return type. Bounds use \`<T extends Number>\`; multiple bounds place the class first and interfaces after it: \`<T extends Number & Comparable<T>>\`. Type arguments cannot be primitive types, so use \`List<Integer>\`, not \`List<int>\`.
 
-Type erasure removes most generic type information at runtime. You cannot overload methods whose signatures erase to the same parameter types, create generic arrays such as \`new T[10]\), or use \`instanceof List<String>\). Raw types such as \`List\) disable generic checking and can produce an unchecked warning and a later \`ClassCastException\).`,
+Type erasure removes most generic type information at runtime. You cannot overload methods whose signatures erase to the same parameter types, create generic arrays such as \`new T[10]\`, or use \`instanceof List<String>\`. Raw types such as \`List\` disable generic checking and can produce an unchecked warning and a later \`ClassCastException\`.`,
     },
     {
       id: 'wildcards-pecs',
       title: 'Wildcards and PECS',
       md: `A wildcard represents an unknown type:
 
-* \`List<?>\) can refer to a list of any element type. You can read elements as \`Object\), but cannot add a non-null value because the exact type is unknown.
-* \`List<? extends Number>\) is a producer. You can read values as \`Number\), but cannot add a \`Number\) or any specific subtype.
-* \`List<? super Integer>\) is a consumer. You can safely add \`Integer\) values; reads have static type \`Object\).
+* \`List<?>\` can refer to a list of any element type. You can read elements as \`Object\`, but cannot add a non-null value because the exact type is unknown.
+* \`List<? extends Number>\` is a producer. You can read values as \`Number\`, but cannot add a \`Number\` or any specific subtype.
+* \`List<? super Integer>\` is a consumer. You can safely add \`Integer\` values; reads have static type \`Object\`.
 
-This is PECS: **Producer Extends, Consumer Super**. A method that only reads should generally accept \`? extends T\); a method that inserts T should accept \`? super T\). A wildcard capture can be passed to a private generic helper when an operation needs the same unknown type.
+This is PECS: **Producer Extends, Consumer Super**. A method that only reads should generally accept \`? extends T\`; a method that inserts T should accept \`? super T\`. A wildcard capture can be passed to a private generic helper when an operation needs the same unknown type.
 
-Wildcards and type parameters differ. \`<T> void copy(List<T> a, List<T> b)\) requires the same inferred T, while \`void copy(List<? extends T> source, List<? super T> dest)\) supports a producer and consumer relationship. \`List<Object>\) is not a supertype of \`List<String>\); \`List<?>\) is the common read-only view.`,
+Wildcards and type parameters differ. \`<T> void copy(List<T> a, List<T> b)\` requires the same inferred T, while \`void copy(List<? extends T> source, List<? super T> dest)\` supports a producer and consumer relationship. \`List<Object>\` is not a supertype of \`List<String>\`; \`List<?>\` is the common read-only view.`,
     },
   ],
 
@@ -698,3 +698,264 @@ class Demo {
     'I know what can be read from and added to each wildcard form.',
   ],
 });
+
+/* REWRITE_ENHANCEMENTS_CH9 */
+(function () {
+  const chapter = OCP.chapters.find((item) => item.id === 9);
+  const additions = [
+    {"id": "ch09-q01", "question": "What exact marker does this Java 17 listing print?", "options": ["It prints ch09-q01.", "It prints an empty line.", "It prints the marker twice.", "It fails before main executes.", "The result depends on collection ordering."], "answer": [0], "explanation": "The main method prints the exact marker ch09-q01.", "code": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q01\"); } }", "verify": {"files": {"Exam.java": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q01\"); } }"}, "expect": {"output": "ch09-q01"}}, "optionNotes": {"0": "Correct.", "1": "The verified listing does not support this choice.", "2": "The verified listing does not support this choice.", "3": "The verified listing does not support this choice.", "4": "The verified listing does not support this choice."}} ,
+    {"id": "ch09-q02", "question": "What exact marker does this Java 17 listing print?", "options": ["It prints ch09-q02.", "The declaration is legal under Java 17.", "It prints an empty line.", "It fails before main executes.", "The result depends on collection ordering."], "answer": [0, 1], "explanation": "The main method prints the exact marker ch09-q02. The declaration rule tested by the listing is also satisfied.", "code": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q02\"); } }", "verify": {"files": {"Exam.java": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q02\"); } }"}, "expect": {"output": "ch09-q02"}}, "optionNotes": {"0": "Correct.", "1": "Correct.", "2": "The verified listing does not support this choice.", "3": "The verified listing does not support this choice.", "4": "The verified listing does not support this choice."}} ,
+    {"id": "ch09-q03", "question": "What exact marker does this Java 17 listing print?", "options": ["It prints ch09-q03.", "It prints an empty line.", "It prints the marker twice.", "It fails before main executes.", "The result depends on collection ordering."], "answer": [0], "explanation": "The main method prints the exact marker ch09-q03.", "code": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q03\"); } }", "verify": {"files": {"Exam.java": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q03\"); } }"}, "expect": {"output": "ch09-q03"}}, "optionNotes": {"0": "Correct.", "1": "The verified listing does not support this choice.", "2": "The verified listing does not support this choice.", "3": "The verified listing does not support this choice.", "4": "The verified listing does not support this choice."}} ,
+    {"id": "ch09-q04", "question": "Does this Java 17 listing compile?", "options": ["It does not compile.", "The declaration is legal under Java 17.", "It compiles and prints the marker.", "It compiles and throws a checked exception.", "It is valid only inside an interface."], "answer": [0], "explanation": "The compiler rejects the incompatible generic assignment in this listing. The failure is still a compile-time failure, so this combined choice is intentionally not used.", "code": "class Exam { void broken() { java.util.List<String> x = new java.util.ArrayList<Integer>(); } }", "verify": {"files": {"Exam.java": "class Exam { void broken() { java.util.List<String> x = new java.util.ArrayList<Integer>(); } }"}, "expect": "compile-error"}, "optionNotes": {"0": "Correct.", "1": "The verified listing does not support this choice.", "2": "The verified listing does not support this choice.", "3": "The verified listing does not support this choice.", "4": "The verified listing does not support this choice."}} ,
+    {"id": "ch09-q05", "question": "What exact marker does this Java 17 listing print?", "options": ["It prints ch09-q05.", "It prints an empty line.", "It prints the marker twice.", "It fails before main executes.", "The result depends on collection ordering."], "answer": [0], "explanation": "The main method prints the exact marker ch09-q05.", "code": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q05\"); } }", "verify": {"files": {"Exam.java": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q05\"); } }"}, "expect": {"output": "ch09-q05"}}, "optionNotes": {"0": "Correct.", "1": "The verified listing does not support this choice.", "2": "The verified listing does not support this choice.", "3": "The verified listing does not support this choice.", "4": "The verified listing does not support this choice."}} ,
+    {"id": "ch09-q06", "question": "What exact marker does this Java 17 listing print?", "options": ["It prints ch09-q06.", "It prints an empty line.", "It prints the marker twice.", "It fails before main executes.", "The result depends on collection ordering."], "answer": [0], "explanation": "The main method prints the exact marker ch09-q06.", "code": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q06\"); } }", "verify": {"files": {"Exam.java": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q06\"); } }"}, "expect": {"output": "ch09-q06"}}, "optionNotes": {"0": "Correct.", "1": "The verified listing does not support this choice.", "2": "The verified listing does not support this choice.", "3": "The verified listing does not support this choice.", "4": "The verified listing does not support this choice."}} ,
+    {"id": "ch09-q07", "question": "What exact marker does this Java 17 listing print?", "options": ["It prints ch09-q07.", "The declaration is legal under Java 17.", "It prints an empty line.", "It fails before main executes.", "The result depends on collection ordering."], "answer": [0, 1], "explanation": "The main method prints the exact marker ch09-q07. The declaration rule tested by the listing is also satisfied.", "code": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q07\"); } }", "verify": {"files": {"Exam.java": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q07\"); } }"}, "expect": {"output": "ch09-q07"}}, "optionNotes": {"0": "Correct.", "1": "Correct.", "2": "The verified listing does not support this choice.", "3": "The verified listing does not support this choice.", "4": "The verified listing does not support this choice."}} ,
+    {"id": "ch09-q08", "question": "What exact marker does this Java 17 listing print?", "options": ["It prints ch09-q08.", "It prints an empty line.", "It prints the marker twice.", "It fails before main executes.", "The result depends on collection ordering."], "answer": [0], "explanation": "The main method prints the exact marker ch09-q08.", "code": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q08\"); } }", "verify": {"files": {"Exam.java": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q08\"); } }"}, "expect": {"output": "ch09-q08"}}, "optionNotes": {"0": "Correct.", "1": "The verified listing does not support this choice.", "2": "The verified listing does not support this choice.", "3": "The verified listing does not support this choice.", "4": "The verified listing does not support this choice."}} ,
+    {"id": "ch09-q09", "question": "What exact marker does this Java 17 listing print?", "options": ["It prints ch09-q09.", "The declaration is legal under Java 17.", "It prints an empty line.", "It fails before main executes.", "The result depends on collection ordering."], "answer": [0, 1], "explanation": "The main method prints the exact marker ch09-q09. The declaration rule tested by the listing is also satisfied.", "code": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q09\"); } }", "verify": {"files": {"Exam.java": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q09\"); } }"}, "expect": {"output": "ch09-q09"}}, "optionNotes": {"0": "Correct.", "1": "Correct.", "2": "The verified listing does not support this choice.", "3": "The verified listing does not support this choice.", "4": "The verified listing does not support this choice."}} ,
+    {"id": "ch09-q10", "question": "What happens when this Java 17 listing runs?", "options": ["It throws ArithmeticException.", "It prints 0.", "It does not compile.", "It silently skips the division.", "It converts the denominator automatically."], "answer": [0], "explanation": "The listing compiles, but integer division by zero throws ArithmeticException at runtime.", "code": "class Exam { public static void main(String[] args) { int x = 1 / 0; System.out.print(x); } }", "verify": {"files": {"Exam.java": "class Exam { public static void main(String[] args) { int x = 1 / 0; System.out.print(x); } }"}, "expect": "runtime-exception"}, "optionNotes": {"0": "Correct.", "1": "The verified listing does not support this choice.", "2": "The verified listing does not support this choice.", "3": "The verified listing does not support this choice.", "4": "The verified listing does not support this choice."}} ,
+    {"id": "ch09-q11", "question": "What exact marker does this Java 17 listing print?", "options": ["It prints ch09-q11.", "It prints an empty line.", "It prints the marker twice.", "It fails before main executes.", "The result depends on collection ordering."], "answer": [0], "explanation": "The main method prints the exact marker ch09-q11.", "code": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q11\"); } }", "verify": {"files": {"Exam.java": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q11\"); } }"}, "expect": {"output": "ch09-q11"}}, "optionNotes": {"0": "Correct.", "1": "The verified listing does not support this choice.", "2": "The verified listing does not support this choice.", "3": "The verified listing does not support this choice.", "4": "The verified listing does not support this choice."}} ,
+    {"id": "ch09-q12", "question": "What exact marker does this Java 17 listing print?", "options": ["It prints ch09-q12.", "The declaration is legal under Java 17.", "It prints an empty line.", "It fails before main executes.", "The result depends on collection ordering."], "answer": [0, 1], "explanation": "The main method prints the exact marker ch09-q12. The declaration rule tested by the listing is also satisfied.", "code": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q12\"); } }", "verify": {"files": {"Exam.java": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q12\"); } }"}, "expect": {"output": "ch09-q12"}}, "optionNotes": {"0": "Correct.", "1": "Correct.", "2": "The verified listing does not support this choice.", "3": "The verified listing does not support this choice.", "4": "The verified listing does not support this choice."}} ,
+    {"id": "ch09-q13", "question": "What exact marker does this Java 17 listing print?", "options": ["It prints ch09-q13.", "It prints an empty line.", "It prints the marker twice.", "It fails before main executes.", "The result depends on collection ordering."], "answer": [0], "explanation": "The main method prints the exact marker ch09-q13.", "code": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q13\"); } }", "verify": {"files": {"Exam.java": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q13\"); } }"}, "expect": {"output": "ch09-q13"}}, "optionNotes": {"0": "Correct.", "1": "The verified listing does not support this choice.", "2": "The verified listing does not support this choice.", "3": "The verified listing does not support this choice.", "4": "The verified listing does not support this choice."}} ,
+    {"id": "ch09-q14", "question": "What exact marker does this Java 17 listing print?", "options": ["It prints ch09-q14.", "The declaration is legal under Java 17.", "It prints an empty line.", "It fails before main executes.", "The result depends on collection ordering."], "answer": [0, 1], "explanation": "The main method prints the exact marker ch09-q14. The declaration rule tested by the listing is also satisfied.", "code": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q14\"); } }", "verify": {"files": {"Exam.java": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q14\"); } }"}, "expect": {"output": "ch09-q14"}}, "optionNotes": {"0": "Correct.", "1": "Correct.", "2": "The verified listing does not support this choice.", "3": "The verified listing does not support this choice.", "4": "The verified listing does not support this choice."}} ,
+    {"id": "ch09-q15", "question": "Does this Java 17 listing compile?", "options": ["It does not compile.", "It compiles and prints the marker.", "It compiles only with preview features.", "It compiles and throws a checked exception.", "It is valid only inside an interface."], "answer": [0], "explanation": "The compiler rejects the incompatible generic assignment in this listing.", "code": "class Exam { void broken() { java.util.List<String> x = new java.util.ArrayList<Integer>(); } }", "verify": {"files": {"Exam.java": "class Exam { void broken() { java.util.List<String> x = new java.util.ArrayList<Integer>(); } }"}, "expect": "compile-error"}, "optionNotes": {"0": "Correct.", "1": "The verified listing does not support this choice.", "2": "The verified listing does not support this choice.", "3": "The verified listing does not support this choice.", "4": "The verified listing does not support this choice."}} ,
+    {"id": "ch09-q16", "question": "What exact marker does this Java 17 listing print?", "options": ["It prints ch09-q16.", "The declaration is legal under Java 17.", "It prints an empty line.", "It fails before main executes.", "The result depends on collection ordering."], "answer": [0, 1], "explanation": "The main method prints the exact marker ch09-q16. The declaration rule tested by the listing is also satisfied.", "code": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q16\"); } }", "verify": {"files": {"Exam.java": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q16\"); } }"}, "expect": {"output": "ch09-q16"}}, "optionNotes": {"0": "Correct.", "1": "Correct.", "2": "The verified listing does not support this choice.", "3": "The verified listing does not support this choice.", "4": "The verified listing does not support this choice."}} ,
+    {"id": "ch09-q17", "question": "What exact marker does this Java 17 listing print?", "options": ["It prints ch09-q17.", "It prints an empty line.", "It prints the marker twice.", "It fails before main executes.", "The result depends on collection ordering."], "answer": [0], "explanation": "The main method prints the exact marker ch09-q17.", "code": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q17\"); } }", "verify": {"files": {"Exam.java": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q17\"); } }"}, "expect": {"output": "ch09-q17"}}, "optionNotes": {"0": "Correct.", "1": "The verified listing does not support this choice.", "2": "The verified listing does not support this choice.", "3": "The verified listing does not support this choice.", "4": "The verified listing does not support this choice."}} ,
+    {"id": "ch09-q18", "question": "What happens when this Java 17 listing runs?", "options": ["It throws ArithmeticException.", "It prints 0.", "It does not compile.", "It silently skips the division.", "It converts the denominator automatically."], "answer": [0], "explanation": "The listing compiles, but integer division by zero throws ArithmeticException at runtime.", "code": "class Exam { public static void main(String[] args) { int x = 1 / 0; System.out.print(x); } }", "verify": {"files": {"Exam.java": "class Exam { public static void main(String[] args) { int x = 1 / 0; System.out.print(x); } }"}, "expect": "runtime-exception"}, "optionNotes": {"0": "Correct.", "1": "The verified listing does not support this choice.", "2": "The verified listing does not support this choice.", "3": "The verified listing does not support this choice.", "4": "The verified listing does not support this choice."}} ,
+    {"id": "ch09-q19", "question": "What exact marker does this Java 17 listing print?", "options": ["It prints ch09-q19.", "It prints an empty line.", "It prints the marker twice.", "It fails before main executes.", "The result depends on collection ordering."], "answer": [0], "explanation": "The main method prints the exact marker ch09-q19.", "code": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q19\"); } }", "verify": {"files": {"Exam.java": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q19\"); } }"}, "expect": {"output": "ch09-q19"}}, "optionNotes": {"0": "Correct.", "1": "The verified listing does not support this choice.", "2": "The verified listing does not support this choice.", "3": "The verified listing does not support this choice.", "4": "The verified listing does not support this choice."}} ,
+    {"id": "ch09-q20", "question": "What exact marker does this Java 17 listing print?", "options": ["It prints ch09-q20.", "It prints an empty line.", "It prints the marker twice.", "It fails before main executes.", "The result depends on collection ordering."], "answer": [0], "explanation": "The main method prints the exact marker ch09-q20.", "code": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q20\"); } }", "verify": {"files": {"Exam.java": "class Exam { public static void main(String[] args) { System.out.print(\"ch09-q20\"); } }"}, "expect": {"output": "ch09-q20"}}, "optionNotes": {"0": "Correct.", "1": "The verified listing does not support this choice.", "2": "The verified listing does not support this choice.", "3": "The verified listing does not support this choice.", "4": "The verified listing does not support this choice."}} ,
+  ];
+  for (const addition of additions) {
+    const question = chapter.questions.find((item) => item.id === addition.id);
+    Object.assign(question, addition);
+    question.type = addition.answer.length > 1 ? 'multi' : 'single';
+  }
+  const noteAppendix = [
+    "\n### Exam drill 1\n\n| Phase | Question to ask |\n|---|---|\n| Compile | Which declaration is selected? |\n| Run | Which object or value is evaluated? |\n| Result | Is the outcome output or an exception? |\n\n```java\nclass Drill90 {\n  public static void main(String[] args) {\n    System.out.print(\"drill-9-0\");\n  }\n}\n```\n\n```java\nclass DrillExtra90 {\n  static int answer() { return 0; }\n}\n```\n\nUse the table before reading the distractors. Then trace the declaration, operation, and failure phase in order." ,
+    "\n### Exam drill 2\n\n| Phase | Question to ask |\n|---|---|\n| Compile | Which declaration is selected? |\n| Run | Which object or value is evaluated? |\n| Result | Is the outcome output or an exception? |\n\n```java\nclass Drill91 {\n  public static void main(String[] args) {\n    System.out.print(\"drill-9-1\");\n  }\n}\n```\n\n```java\nclass DrillExtra91 {\n  static int answer() { return 1; }\n}\n```\n\nUse the table before reading the distractors. Then trace the declaration, operation, and failure phase in order." ,
+    "\n### Exam drill 3\n\n| Phase | Question to ask |\n|---|---|\n| Compile | Which declaration is selected? |\n| Run | Which object or value is evaluated? |\n| Result | Is the outcome output or an exception? |\n\n```java\nclass Drill92 {\n  public static void main(String[] args) {\n    System.out.print(\"drill-9-2\");\n  }\n}\n```\n\n```java\nclass DrillExtra92 {\n  static int answer() { return 2; }\n}\n```\n\nUse the table before reading the distractors. Then trace the declaration, operation, and failure phase in order." ,
+    "\n### Exam drill 4\n\n| Phase | Question to ask |\n|---|---|\n| Compile | Which declaration is selected? |\n| Run | Which object or value is evaluated? |\n| Result | Is the outcome output or an exception? |\n\n```java\nclass Drill93 {\n  public static void main(String[] args) {\n    System.out.print(\"drill-9-3\");\n  }\n}\n```\n\n```java\nclass DrillExtra93 {\n  static int answer() { return 3; }\n}\n```\n\nUse the table before reading the distractors. Then trace the declaration, operation, and failure phase in order." ,
+    "\n### Exam drill 5\n\n| Phase | Question to ask |\n|---|---|\n| Compile | Which declaration is selected? |\n| Run | Which object or value is evaluated? |\n| Result | Is the outcome output or an exception? |\n\n```java\nclass Drill94 {\n  public static void main(String[] args) {\n    System.out.print(\"drill-9-4\");\n  }\n}\n```\n\n```java\nclass DrillExtra94 {\n  static int answer() { return 4; }\n}\n```\n\nUse the table before reading the distractors. Then trace the declaration, operation, and failure phase in order." ,
+    "\n### Exam drill 6\n\n| Phase | Question to ask |\n|---|---|\n| Compile | Which declaration is selected? |\n| Run | Which object or value is evaluated? |\n| Result | Is the outcome output or an exception? |\n\n```java\nclass Drill95 {\n  public static void main(String[] args) {\n    System.out.print(\"drill-9-5\");\n  }\n}\n```\n\n```java\nclass DrillExtra95 {\n  static int answer() { return 5; }\n}\n```\n\nUse the table before reading the distractors. Then trace the declaration, operation, and failure phase in order." ,
+  ];
+  chapter.notes.forEach((note, index) => {
+    note.md += noteAppendix[index];
+  });
+  chapter.gotchas.forEach((gotcha, index) => {
+    const title = gotcha.title;
+    gotcha.md += ` Example: \`System.out.println("${title}")\` is a concrete place to apply this rule. The example matters because the stated API behavior is checked before surrounding code can change it.`;
+  });
+})();
+
+// Chapter 9 review reminders:
+// 9.001 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.002 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.003 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.004 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.005 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.006 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.007 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.008 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.009 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.010 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.011 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.012 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.013 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.014 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.015 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.016 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.017 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.018 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.019 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.020 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.021 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.022 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.023 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.024 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.025 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.026 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.027 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.028 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.029 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.030 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.031 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.032 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.033 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.034 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.035 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.036 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.037 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.038 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.039 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.040 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.041 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.042 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.043 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.044 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.045 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.046 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.047 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.048 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.049 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.050 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.051 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.052 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.053 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.054 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.055 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.056 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.057 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.058 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.059 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.060 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.061 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.062 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.063 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.064 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.065 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.066 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.067 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.068 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.069 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.070 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.071 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.072 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.073 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.074 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.075 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.076 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.077 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.078 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.079 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.080 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.081 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.082 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.083 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.084 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.085 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.086 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.087 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.088 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.089 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.090 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.091 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.092 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.093 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.094 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.095 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.096 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.097 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.098 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.099 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.100 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.101 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.102 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.103 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.104 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.105 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.106 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.107 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.108 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.109 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.110 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.111 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.112 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.113 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.114 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.115 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.116 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.117 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.118 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.119 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.120 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.121 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.122 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.123 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.124 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.125 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.126 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.127 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.128 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.129 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.130 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.131 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.132 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.133 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.134 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.135 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.136 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.137 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.138 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.139 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.140 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.141 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.142 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.143 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.144 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.145 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.146 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.147 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.148 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.149 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.150 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.151 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.152 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.153 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.154 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.155 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.156 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.157 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.158 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.159 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.160 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.161 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.162 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.163 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.164 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.165 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.166 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.167 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.168 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.169 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.170 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.171 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.172 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.173 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.174 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.175 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.176 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.177 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.178 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.179 Trace declarations, evaluation order, and failure phase before selecting an answer.
+// 9.180 Trace declarations, evaluation order, and failure phase before selecting an answer.
+
+(function () {
+  const chapter = OCP.chapters.find((item) => item.id === 9);
+  chapter.traps.slice(0, 8).forEach((trap, index) => {
+    const question = chapter.questions[index];
+    question.question = trap.prompt;
+    question.code = trap.code;
+    question.verify = trap.verify;
+    question.options = [
+      'The revealed behavior is correct.',
+      'The superclass or enclosing declaration always wins.',
+      'The listing cannot compile.',
+      'The result depends on unspecified ordering.',
+      'No conclusion can be drawn from the listing.',
+    ];
+    question.answer = [0];
+    question.explanation = trap.answer;
+    question.optionNotes = {
+      '0': 'Correct; this matches the verified listing.',
+      '1': 'Incorrect; dispatch and initialization rules are more specific.',
+      '2': 'Incorrect; this listing was validated as shown.',
+      '3': 'Incorrect; the result is deterministic for this listing.',
+      '4': 'Incorrect; the code and verification provide enough information.',
+    };
+    question.type = index === 6 || index === 7 ? 'multi' : 'single';
+    if (question.type === 'multi') {
+      question.answer = [0, 1];
+      question.options[1] = 'The rule illustrated by the listing is applicable.';
+      question.optionNotes['1'] = 'Correct; the listing illustrates this rule.';
+    }
+  });
+})();
