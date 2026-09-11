@@ -1007,13 +1007,12 @@
       s = Store.get();
     s.lastRoute = hash;
     Store.save();
-    if (
-      activeQuiz &&
-      activeQuiz.exam &&
-      !/^#\/exam/.test(hash) &&
-      !confirm("Leave this exam? Your current exam answers will be lost.")
-    )
-      return;
+    if (activeQuiz && activeQuiz.exam && !/^#\/exam/.test(hash)) {
+      if (!confirm("Leave this exam? Your current exam answers will be lost."))
+        return;
+      clearInterval(examTimer);
+      activeQuiz = null;
+    }
     if (path[0] === "") renderDashboard();
     else if (path[0] === "ch") renderChapter(path[1], path[2]);
     else if (path[0] === "quiz")
