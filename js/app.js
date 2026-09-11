@@ -420,7 +420,15 @@
           (checked && q.optionNotes && q.optionNotes[i]
             ? "<small>" + renderMarkdown(q.optionNotes[i]) + "</small>"
             : "") +
-          "</span></label>"
+          "</span>" +
+          (checked
+            ? q.answer.indexOf(i) >= 0
+              ? '<span class="verdict verdict-correct">✓ Correct</span>'
+              : selected
+                ? '<span class="verdict verdict-wrong">✗ Your pick</span>'
+                : ""
+            : "") +
+          "</label>"
         );
       })
       .join("");
@@ -436,9 +444,11 @@
           ? "Finish"
           : "Next") +
         "</button>"
-      : instantAnswers
-        ? ""
-        : '<button class="button primary" id="checkAnswer">Check</button>';
+      : '<button class="button primary" id="checkAnswer" ' +
+        (chosen.length ? "" : "disabled") +
+        ">" +
+        (instantAnswers ? "Submit" : "Check") +
+        "</button>";
     layout(
       '<div class="quiz-meta"><span>Question ' +
         (activeQuiz.index + 1) +
@@ -462,7 +472,7 @@
         opts +
         "</div>" +
         footer +
-        '</article><p class="keyboard-hint">Keys 1–5 select · Enter check/next · B bookmark</p>',
+        '</article><p class="keyboard-hint">Keys 1–5 select · Enter submit/next · B bookmark</p>',
       "Quiz",
     );
     app.querySelectorAll("input[name=answer]").forEach(function (input) {
@@ -476,11 +486,8 @@
             return x !== n;
           });
         activeQuiz.answers[q.id] = a;
-        if (
-          instantAnswers &&
-          (q.type === "single" || a.length === q.answer.length)
-        )
-          check();
+        var submit = document.getElementById("checkAnswer");
+        if (submit) submit.disabled = !a.length;
       };
     });
     document.getElementById("instantToggle").onchange = function () {

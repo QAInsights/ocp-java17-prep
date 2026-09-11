@@ -29,6 +29,8 @@
   --border: #344156;
   --primary: #93a7ff;
   --primary-soft: #27366e;
+  --danger: #f97066;
+  --success: #47cd89;
   --code: #0b101a;
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
@@ -220,6 +222,10 @@ p {
   color: #fff;
   background: var(--primary);
   border-color: var(--primary);
+}
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 .danger-button {
   color: var(--danger);
@@ -504,13 +510,28 @@ code:not(.code code) {
   border-color: var(--primary);
   background: var(--primary-soft);
 }
-.option.correct {
+.option.correct,
+.option:has(input:checked).correct {
   border-color: var(--success);
   background: color-mix(in srgb, var(--success) 10%, transparent);
 }
-.option.incorrect {
+.option.incorrect,
+.option:has(input:checked).incorrect {
   border-color: var(--danger);
   background: color-mix(in srgb, var(--danger) 10%, transparent);
+}
+.option .verdict {
+  margin-left: auto;
+  align-self: center;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.verdict-correct {
+  color: var(--success);
+}
+.verdict-wrong {
+  color: var(--danger);
 }
 .option-letter {
   font-weight: 800;
@@ -521,16 +542,28 @@ code:not(.code code) {
   margin-top: 4px;
 }
 .feedback {
-  border: 1px solid currentColor;
+  border: 1px solid var(--border);
   border-radius: 9px;
   padding: 14px;
   margin: 16px 0;
 }
-.feedback.success,
+.feedback.success {
+  border-color: var(--success);
+  background: color-mix(in srgb, var(--success) 10%, transparent);
+}
+.feedback.danger {
+  border-color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
+}
+.feedback.success strong {
+  color: var(--success);
+}
+.feedback.danger strong {
+  color: var(--danger);
+}
 .success-text {
   color: var(--success);
 }
-.feedback.danger,
 .danger-text {
   color: var(--danger);
 }
