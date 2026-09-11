@@ -92,12 +92,14 @@ nav {
 }
 nav a {
   text-decoration: none;
+  white-space: nowrap;
 }
 .chapter-nav {
   display: flex;
   align-items: center;
   gap: 4px;
   color: var(--muted);
+  white-space: nowrap;
 }
 .chapter-nav select {
   max-width: 110px;
@@ -134,6 +136,9 @@ nav a {
 .container {
   width: min(1100px, calc(100% - 36px));
   margin: 0 auto;
+}
+html {
+  scroll-padding-top: 84px;
 }
 main {
   padding: 36px 0 70px;
@@ -188,6 +193,7 @@ p {
   border-radius: 14px;
   padding: 22px;
   box-shadow: var(--shadow);
+  overflow-wrap: break-word;
 }
 .hero {
   display: flex;
@@ -232,7 +238,7 @@ p {
 }
 .stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
   margin: 20px 0 35px;
 }
@@ -258,7 +264,7 @@ p {
 }
 .cards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
 }
 .card-top {
@@ -294,7 +300,7 @@ p {
 }
 .split {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
   margin-top: 18px;
 }
@@ -334,8 +340,17 @@ p {
 }
 .notes-layout {
   display: grid;
-  grid-template-columns: 190px 1fr;
+  grid-template-columns: 190px minmax(0, 1fr);
   gap: 20px;
+}
+.notes-layout > *,
+.cards > *,
+.stats > *,
+.split > *,
+.trap-list > *,
+.checklist > *,
+.cheatsheet > * {
+  min-width: 0;
 }
 .toc {
   align-self: start;
@@ -386,6 +401,10 @@ code:not(.code code) {
   background: var(--primary-soft);
   border-radius: 4px;
   padding: 1px 4px;
+  overflow-wrap: anywhere;
+}
+.table-wrap code {
+  overflow-wrap: normal;
 }
 .code {
   background: var(--code);
@@ -433,6 +452,7 @@ code:not(.code code) {
 }
 .trap-list {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 16px;
 }
 .hidden {
@@ -445,6 +465,7 @@ code:not(.code code) {
 }
 .checklist {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 14px;
 }
 .checklist label {
@@ -454,7 +475,8 @@ code:not(.code code) {
 .quiz-meta {
   display: flex;
   align-items: center;
-  gap: 17px;
+  flex-wrap: wrap;
+  gap: 8px 17px;
   margin-bottom: 13px;
   color: var(--muted);
 }
@@ -494,6 +516,7 @@ code:not(.code code) {
 }
 .options {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 9px;
   margin: 18px 0;
 }
@@ -505,6 +528,10 @@ code:not(.code code) {
   border: 1px solid var(--border);
   border-radius: 9px;
   cursor: pointer;
+  min-width: 0;
+}
+.option > span {
+  min-width: 0;
 }
 .option:has(input:checked) {
   border-color: var(--primary);
@@ -583,6 +610,8 @@ code:not(.code code) {
 .flash-toolbar {
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
   margin-bottom: 20px;
 }
 .flash-toolbar select,
@@ -618,6 +647,7 @@ code:not(.code code) {
 }
 .cheatsheet {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 16px;
   clear: both;
 }
@@ -688,21 +718,63 @@ dialog form {
     order: 3;
     width: 100%;
     overflow: auto;
+    scrollbar-width: none;
+  }
+  nav::-webkit-scrollbar {
+    display: none;
   }
   .search-form {
     margin-left: auto;
   }
   .cards {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .notes-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .toc {
     position: static;
   }
 }
 @media (max-width: 560px) {
+  html {
+    scroll-padding-top: 172px;
+  }
+  .site-header {
+    gap: 8px 12px;
+    padding: 10px 16px;
+  }
+  #themeToggle {
+    margin-left: auto;
+  }
+  .search-form {
+    order: 2;
+    width: 100%;
+    margin-left: 0;
+  }
+  .search-form input {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+  }
+  nav {
+    order: 3;
+  }
+  .chapter-nav select {
+    max-width: 100px;
+  }
+  .tabs {
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+  main {
+    padding: 22px 0 50px;
+  }
+  .keyboard-hint {
+    display: none;
+  }
   .container {
     width: min(100% - 24px, 1100px);
   }
@@ -716,7 +788,7 @@ dialog form {
   .stats,
   .split,
   .cards {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .footer {
     display: block;

@@ -1007,8 +1007,12 @@
         : theme;
   }
   function route() {
-    var hash = location.hash || "#/",
-      bits = hash.slice(2).split("?"),
+    var hash = location.hash || "#/";
+    if (hash.charAt(1) !== "/") {
+      if (app.innerHTML) return;
+      hash = "#/";
+    }
+    var bits = hash.slice(2).split("?"),
       path = bits[0].split("/"),
       query = new URLSearchParams(bits[1] || ""),
       s = Store.get();

@@ -84,7 +84,7 @@
           i++;
         }
         out.push(
-          "<table><thead><tr>" +
+          '<div class="table-wrap"><table><thead><tr>' +
             rows[0]
               .map(function (x) {
                 return "<th>" + inline(x) + "</th>";
@@ -105,7 +105,7 @@
                 );
               })
               .join("") +
-            "</tbody></table>",
+            "</tbody></table></div>",
         );
         continue;
       }
