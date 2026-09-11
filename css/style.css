@@ -452,6 +452,20 @@ code:not(.code code) {
   margin-bottom: 13px;
   color: var(--muted);
 }
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-style: normal;
+}
+.select-hint {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-style: italic;
+}
 .quiz-meta strong {
   color: var(--danger);
   margin-left: auto;

@@ -11,6 +11,7 @@
       checklist: {},
       flashcards: {},
       exams: [],
+      instantAnswers: false,
     };
   };
   var state;

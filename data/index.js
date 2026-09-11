@@ -174,7 +174,7 @@
       },
     ],
     plannedChapters: [
-      [1, "Building Blocks", ["1a"]],
+      [1, "Building Blocks", ["1a", "3d"]],
       [2, "Operators", ["1a"]],
       [3, "Making Decisions", ["2"]],
       [4, "Core APIs", ["1a", "1b", "1c", "5"]],

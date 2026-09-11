@@ -385,6 +385,8 @@
       chosen = activeQuiz.answers[q.id] || [],
       checked = activeQuiz.checked,
       record = Store.question(q.id),
+      instantAnswers = !!Store.get().instantAnswers,
+      questionText = q.question.replace(/\s*\(Choose all that apply\.\)/, ""),
       isCorrect =
         checked &&
         chosen.length === q.answer.length &&
@@ -434,7 +436,9 @@
           ? "Finish"
           : "Next") +
         "</button>"
-      : '<button class="button primary" id="checkAnswer">Check</button>';
+      : instantAnswers
+        ? ""
+        : '<button class="button primary" id="checkAnswer">Check</button>';
     layout(
       '<div class="quiz-meta"><span>Question ' +
         (activeQuiz.index + 1) +
@@ -442,10 +446,16 @@
         activeQuiz.questions.length +
         "</span><span>" +
         q.difficulty +
-        '</span><button class="bookmark ' +
+        '</span><label class="toggle"><input type="checkbox" id="instantToggle" ' +
+        (instantAnswers ? "checked" : "") +
+        '> Instant answers</label><button class="bookmark ' +
         (record.bookmarked ? "on" : "") +
         '" id="bookmark">★</button></div><article class="quiz-card card"><div class="question">' +
-        renderMarkdown(q.question) +
+        renderMarkdown(questionText) +
+        '<p class="select-hint">Select ' +
+        (q.type === "multi" ? q.answer.length : 1) +
+        (q.type === "multi" ? " options." : " option.") +
+        "</p>" +
         "</div>" +
         (q.code ? highlightJava(q.code) : "") +
         '<div class="options">' +
@@ -466,8 +476,18 @@
             return x !== n;
           });
         activeQuiz.answers[q.id] = a;
+        if (
+          instantAnswers &&
+          (q.type === "single" || a.length === q.answer.length)
+        )
+          check();
       };
     });
+    document.getElementById("instantToggle").onchange = function () {
+      Store.get().instantAnswers = this.checked;
+      Store.save();
+      renderQuestion();
+    };
     document.getElementById("checkAnswer") &&
       (document.getElementById("checkAnswer").onclick = check);
     document.getElementById("nextQuestion") &&
@@ -549,14 +569,19 @@
   }
   function renderExamQuestion() {
     var q = activeQuiz.questions[activeQuiz.index],
-      chosen = activeQuiz.answers[q.id] || [];
+      chosen = activeQuiz.answers[q.id] || [],
+      questionText = q.question.replace(/\s*\(Choose all that apply\.\)/, "");
     layout(
       '<div class="quiz-meta"><span>Mock exam · ' +
         (activeQuiz.index + 1) +
         "/" +
         activeQuiz.questions.length +
         '</span><strong id="examClock">90:00</strong></div><article class="quiz-card card"><div class="question">' +
-        renderMarkdown(q.question) +
+        renderMarkdown(questionText) +
+        '<p class="select-hint">Select ' +
+        (q.type === "multi" ? q.answer.length : 1) +
+        (q.type === "multi" ? " options." : " option.") +
+        "</p>" +
         "</div>" +
         (q.code ? highlightJava(q.code) : "") +
         '<div class="options">' +
@@ -925,11 +950,16 @@
     var d = document.createElement("dialog");
     d.id = "settingsDialog";
     d.innerHTML =
-      '<form method="dialog"><h2>Settings</h2><label>Theme <select id="themeChoice"><option value="auto">Auto</option><option value="light">Light</option><option value="dark">Dark</option></select></label><button class="button" id="exportProgress">Export progress</button><label class="button file-button">Import progress<input type="file" id="importProgress" accept=".json"></label><button class="button danger-button" id="resetProgress">Reset progress</button><button class="button">Close</button></form>';
+      '<form method="dialog"><h2>Settings</h2><label>Theme <select id="themeChoice"><option value="auto">Auto</option><option value="light">Light</option><option value="dark">Dark</option></select></label><label class="toggle"><input type="checkbox" id="settingsInstant"> Instant answers in practice quizzes</label><button class="button" id="exportProgress">Export progress</button><label class="button file-button">Import progress<input type="file" id="importProgress" accept=".json"></label><button class="button danger-button" id="resetProgress">Reset progress</button><button class="button">Close</button></form>';
     document.body.appendChild(d);
     d.showModal();
     var theme = Store.get().theme || "auto";
     d.querySelector("#themeChoice").value = theme;
+    d.querySelector("#settingsInstant").checked = !!Store.get().instantAnswers;
+    d.querySelector("#settingsInstant").onchange = function () {
+      Store.get().instantAnswers = this.checked;
+      Store.save();
+    };
     d.querySelector("#themeChoice").onchange = function () {
       applyTheme(this.value);
       Store.setTheme(this.value);
@@ -977,13 +1007,12 @@
       s = Store.get();
     s.lastRoute = hash;
     Store.save();
-    if (
-      activeQuiz &&
-      activeQuiz.exam &&
-      !/^#\/exam/.test(hash) &&
-      !confirm("Leave this exam? Your current exam answers will be lost.")
-    )
-      return;
+    if (activeQuiz && activeQuiz.exam && !/^#\/exam/.test(hash)) {
+      if (!confirm("Leave this exam? Your current exam answers will be lost."))
+        return;
+      clearInterval(examTimer);
+      activeQuiz = null;
+    }
     if (path[0] === "") renderDashboard();
     else if (path[0] === "ch") renderChapter(path[1], path[2]);
     else if (path[0] === "quiz")
