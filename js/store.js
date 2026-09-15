@@ -12,6 +12,7 @@
       flashcards: {},
       exams: [],
       instantAnswers: false,
+      highlight: "amber",
     };
   };
   var state;
@@ -72,6 +73,10 @@
     },
     setTheme: function (theme) {
       state.theme = theme;
+      save();
+    },
+    setHighlight: function (highlight) {
+      state.highlight = highlight;
       save();
     },
     export: function () {

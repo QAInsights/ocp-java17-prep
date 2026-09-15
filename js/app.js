@@ -239,7 +239,7 @@
         (c.gotchas || [])
           .map(function (g) {
             return (
-              '<article class="card"><h2>' +
+              '<article class="card gotcha"><h2>' +
               esc(g.title) +
               "</h2>" +
               renderMarkdown(g.md) +
@@ -957,11 +957,12 @@
     var d = document.createElement("dialog");
     d.id = "settingsDialog";
     d.innerHTML =
-      '<form method="dialog"><h2>Settings</h2><label>Theme <select id="themeChoice"><option value="auto">Auto</option><option value="light">Light</option><option value="dark">Dark</option></select></label><label class="toggle"><input type="checkbox" id="settingsInstant"> Instant answers in practice quizzes</label><button class="button" id="exportProgress">Export progress</button><label class="button file-button">Import progress<input type="file" id="importProgress" accept=".json"></label><button class="button danger-button" id="resetProgress">Reset progress</button><button class="button">Close</button></form>';
+      '<form method="dialog"><h2>Settings</h2><label>Theme <select id="themeChoice"><option value="auto">Auto</option><option value="light">Light</option><option value="dark">Dark</option></select></label><label>Highlight color <select id="hlChoice"><option value="amber">Amber</option><option value="sky">Sky</option><option value="mint">Mint</option><option value="rose">Rose</option><option value="none">None</option></select></label><label class="toggle"><input type="checkbox" id="settingsInstant"> Instant answers in practice quizzes</label><button class="button" id="exportProgress">Export progress</button><label class="button file-button">Import progress<input type="file" id="importProgress" accept=".json"></label><button class="button danger-button" id="resetProgress">Reset progress</button><button class="button">Close</button></form>';
     document.body.appendChild(d);
     d.showModal();
     var theme = Store.get().theme || "auto";
     d.querySelector("#themeChoice").value = theme;
+    d.querySelector("#hlChoice").value = Store.get().highlight || "amber";
     d.querySelector("#settingsInstant").checked = !!Store.get().instantAnswers;
     d.querySelector("#settingsInstant").onchange = function () {
       Store.get().instantAnswers = this.checked;
@@ -970,6 +971,10 @@
     d.querySelector("#themeChoice").onchange = function () {
       applyTheme(this.value);
       Store.setTheme(this.value);
+    };
+    d.querySelector("#hlChoice").onchange = function () {
+      applyHighlight(this.value);
+      Store.setHighlight(this.value);
     };
     d.querySelector("#exportProgress").onclick = function () {
       var a = document.createElement("a");
@@ -1005,6 +1010,9 @@
           ? "dark"
           : "light"
         : theme;
+  }
+  function applyHighlight(name) {
+    document.documentElement.dataset.highlight = name || "amber";
   }
   function route() {
     var hash = location.hash || "#/";
@@ -1059,6 +1067,7 @@
     if (this.value) location.hash = "#/ch/" + this.value;
   };
   applyTheme(Store.get().theme || "auto");
+  applyHighlight(Store.get().highlight);
   window.addEventListener("hashchange", route);
   document.addEventListener("keydown", function (e) {
     if (!activeQuiz || e.target.matches("input,textarea,select")) return;
