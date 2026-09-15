@@ -67,7 +67,7 @@ a.equals(c)       // true
 | \`matches(regex)\` | Whole-string match. |
 | \`toCharArray()\`, \`getBytes()\` | |
 
-**Method chaining** works on the returned strings: \`"AniMaL   ".trim().toLowerCase().replace('a', 'A')\` → \`"AniMAl"\`.
+**Method chaining** works on the returned strings: \`"AniMaL   ".trim().toLowerCase().replace('a', 'A')\` → \`"AnimAl"\`.
 
 ### \`indent\` detail
 \`"a\\nb".indent(2)\` → \`"  a\\n  b\\n"\` – note the **added trailing newline**. Negative values remove up to that many leading spaces. \`indent(0)\` still normalises line endings and appends \`\\n\` if missing.

@@ -523,8 +523,8 @@ public class SortTest {
         '[cat, ant, bee, bear]',
         'Compile error'
       ],
-      answer: [0],
-      explanation: 'First sorted by length: length 3 words ("cat", "ant", "bee") come before length 4 ("bear"). Within length 3, secondary sort is natural alphabetical order: "ant", then "cat" (wait, "a" < "b" < "c", so ant, then bee, then cat! Wait, alphabetical: "ant" (a), "bee" (b), "cat" (c)). Let\'s check alphabetical order: a-n-t (ant), b-e-e (bee), c-a-t (cat). So option 1 is [ant, bee, cat, bear]!',
+      answer: [1],
+      explanation: 'Sorted first by length: the three 3-letter words ("cat", "ant", "bee") come before "bear" (length 4). Within length 3, the secondary sort is natural alphabetical order: "ant" (a), "bee" (b), "cat" (c). Output is `[ant, bee, cat, bear]`.',
       optionNotes: {
         '0': 'cat before bee is not alphabetical.',
         '1': 'Correct: length 3 words sorted alphabetically (ant, bee, cat), then length 4 (bear).',
