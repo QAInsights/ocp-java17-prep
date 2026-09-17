@@ -5,6 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Offline study companion for Oracle Certified Professional Java SE 17">
   <title>OCP Java 17 Prep</title>
+  <meta name="color-scheme" content="light dark">
+  <script>
+    (function () {
+      var theme = "";
+      try {
+        theme = (JSON.parse(localStorage.getItem("ocp17.state.v1")) || {}).theme || "";
+      } catch (e) {}
+      if (theme === "auto") theme = "";
+      if (!theme) theme = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      document.documentElement.dataset.theme = theme;
+      document.querySelector('meta[name="color-scheme"]').content = theme;
+    })();
+  </script>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>

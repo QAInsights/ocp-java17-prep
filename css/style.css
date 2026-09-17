@@ -11,6 +11,7 @@
   --code: #172033;
   --hl: rgba(255, 179, 0, 0.32);
   --shadow: 0 10px 30px rgba(27, 44, 80, 0.08);
+  color-scheme: light dark;
   font-family:
     Inter,
     ui-sans-serif,
@@ -22,7 +23,11 @@
   color: var(--text);
   background: var(--bg);
 }
+:root[data-theme="light"] {
+  color-scheme: light;
+}
 :root[data-theme="dark"] {
+  color-scheme: dark;
   --bg: #101522;
   --surface: #192131;
   --text: #eef3ff;
@@ -66,6 +71,10 @@ button,
 input,
 select {
   font: inherit;
+}
+select option {
+  background: var(--surface);
+  color: var(--text);
 }
 button,
 a.button {

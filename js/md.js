@@ -76,9 +76,10 @@
             lines[i]
               .trim()
               .replace(/^\||\|$/g, "")
+              .replace(/\\\|/g, "\u0001")
               .split("|")
               .map(function (x) {
-                return x.trim();
+                return x.replace(/\u0001/g, "|").trim();
               }),
           );
           i++;
