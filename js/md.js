@@ -31,11 +31,13 @@
           code.push(lines[i++]);
         i++;
         out.push(
-          lang === "java"
-            ? highlightJava(code.join("\n"))
-            : '<pre class="code"><code>' +
-                escape(code.join("\n")) +
-                "</code></pre>",
+          lang === "java" && (window.highlightJava || typeof highlightJava !== "undefined")
+            ? (window.highlightJava || highlightJava)(code.join("\n"))
+            : (window.wrapCodeBlock
+                ? window.wrapCodeBlock(escape(code.join("\n")))
+                : '<pre class="code"><code>' +
+                    escape(code.join("\n")) +
+                    "</code></pre>"),
         );
         continue;
       }
