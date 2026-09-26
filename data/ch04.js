@@ -249,19 +249,25 @@ Months in \`of(...)\` are **1–12** (not 0-based like the old \`Calendar\`). \`
 
 \`\`\`java
 LocalDate d = LocalDate.of(2024, 1, 31);
-d.plusMonths(1);          // 2024-02-29 (clamps to end of month)
-d.plusDays(1);            // 2024-02-01
-d.minusYears(1);          // 2023-01-31
-d.withDayOfMonth(1);      // 2024-01-01
-d.getDayOfWeek();         // WEDNESDAY
-d.isLeapYear();           // true
-d.lengthOfMonth();        // 31
-d.isBefore(other), isAfter, isEqual, compareTo
-d.getMonthValue()         // 1 (int), getMonth() → Month.JANUARY
-d.plus(Period.ofMonths(1))
-d.plus(1, ChronoUnit.WEEKS)
-d.atTime(10, 0)           // LocalDateTime
-d.atStartOfDay()          // LocalDateTime 00:00
+d.plusMonths(1);                     // 2024-02-29 (clamps to end of month)
+d.plusDays(1);                       // 2024-02-01
+d.minusYears(1);                     // 2023-01-31
+d.withDayOfMonth(1);                 // 2024-01-01
+d.getDayOfWeek();                    // WEDNESDAY
+d.isLeapYear();                      // true
+d.lengthOfMonth();                   // 31
+
+LocalDate other = LocalDate.of(2024, 2, 1);
+d.isBefore(other);                   // true
+d.isAfter(other);                    // false
+d.isEqual(other);                    // false
+d.compareTo(other);                  // < 0 (-1)
+
+d.getMonthValue();                   // 1 (int), d.getMonth() → Month.JANUARY
+d.plus(Period.ofMonths(1));          // 2024-02-29
+d.plus(1, ChronoUnit.WEEKS);         // 2024-02-07
+d.atTime(10, 0);                     // LocalDateTime (2024-01-31T10:00)
+d.atStartOfDay();                    // LocalDateTime (2024-01-31T00:00)
 \`\`\`
 
 * \`LocalDate.plus(Duration)\` → **\`UnsupportedTemporalTypeException\`** at runtime (dates don't support seconds). \`LocalTime.plus(Period)\` likewise fails at runtime. \`LocalDateTime\` accepts both.

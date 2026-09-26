@@ -410,12 +410,13 @@ table {
 th,
 td {
   border: 1px solid var(--border);
-  padding: 9px;
+  padding: 9px 12px;
   text-align: left;
   vertical-align: top;
 }
 th {
   background: var(--primary-soft);
+  font-weight: 600;
 }
 blockquote {
   border-left: 4px solid var(--primary);
@@ -757,7 +758,12 @@ code:not(.code code) {
   clear: both;
 }
 .table-wrap {
-  overflow: auto;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 15px 0;
+}
+.table-wrap table {
+  margin: 0;
 }
 .coverage {
   min-width: 900px;

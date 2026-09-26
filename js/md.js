@@ -74,16 +74,18 @@
       ) {
         var rows = [];
         while (i < lines.length && /^\|/.test(lines[i])) {
-          rows.push(
-            lines[i]
-              .trim()
-              .replace(/^\||\|$/g, "")
-              .replace(/\\\|/g, "\u0001")
-              .split("|")
-              .map(function (x) {
-                return x.replace(/\u0001/g, "|").trim();
-              }),
-          );
+          var rowLine = lines[i].trim().replace(/^\||\|$/g, "");
+          rowLine = rowLine.replace(/\\\|/g, "\u0001");
+          rowLine = rowLine.replace(/(`+)([\s\S]*?)\1/g, function (m, b, code) {
+            return b + code.replace(/\|/g, "\u0001") + b;
+          });
+          var cells = rowLine.split("|").map(function (x) {
+            return x.replace(/\u0001/g, "|").trim();
+          });
+          if (rows.length > 0 && cells.length < rows[0].length) {
+            while (cells.length < rows[0].length) cells.push("");
+          }
+          rows.push(cells);
           i++;
         }
         out.push(
