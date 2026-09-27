@@ -1,0 +1,248 @@
+/* ==========================================================================
+   OCP Java 17 Prep — Flashcards & Cheatsheet
+   ========================================================================== */
+
+/* Flashcards Container & Toolbar */
+.flashcards-wrapper {
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+.flash-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.flash-toolbar-left,
+.flash-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.flash-progress-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.flash-counter {
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.flash-counter strong {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.flash-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.flash-status-badge.got {
+  background: var(--success-soft);
+  color: var(--success);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+}
+
+.flash-status-badge.again {
+  background: var(--danger-soft);
+  color: var(--danger);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+}
+
+.flash-status-badge.new {
+  background: var(--surface-hover);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.flash-progress {
+  height: 6px;
+  margin: 0 0 20px;
+}
+
+/* Flashcard Box */
+.flashcard {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xl);
+  padding: 28px 32px;
+  min-height: 290px;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.flashcard:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-glow), var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.flashcard:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
+.flashcard.flipped {
+  background: var(--surface-elevated);
+  border-color: var(--primary);
+}
+
+.flash-front,
+.flash-back {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: 1;
+  min-height: 230px;
+}
+
+/* Visibility rules: Only one face visible at a time */
+.flashcard:not(.flipped) .flash-back {
+  display: none !important;
+}
+
+.flashcard.flipped .flash-front {
+  display: none !important;
+}
+
+.flashcard .flash-front,
+.flashcard .flash-back {
+  animation: flashReveal 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes flashReveal {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.flash-card-header {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 14px;
+}
+
+.flash-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.flash-back .flash-card-body {
+  text-align: left;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+.flash-title {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 10px;
+}
+
+.flash-back .flash-title {
+  font-size: 1.15rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+.flash-sub {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin: 0;
+  max-width: 480px;
+  line-height: 1.5;
+}
+
+.flash-card-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 18px;
+}
+
+.flip-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  background: var(--surface-hover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 4px 12px;
+  transition: all 0.15s ease;
+}
+
+.flashcard:hover .flip-hint {
+  color: var(--text);
+  border-color: var(--primary);
+}
+
+.flash-actions {
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.kbd-hint {
+  display: inline-block;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-left: 6px;
+  font-weight: 600;
+}
+
+.badge-success {
+  background: var(--success-soft) !important;
+  color: var(--success) !important;
+  border-color: rgba(52, 211, 153, 0.3) !important;
+}
+
+/* Cheatsheet */
+.cheatsheet {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 800px) {
+  .cheatsheet {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
