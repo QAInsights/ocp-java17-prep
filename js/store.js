@@ -4,7 +4,7 @@
     timer;
   var initial = function () {
     return {
-      theme: "",
+      theme: "dark",
       lastRoute: "#/",
       questions: {},
       notesRead: {},

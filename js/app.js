@@ -62,9 +62,9 @@
         .map(function (x) {
           if (!x.chapter)
             return (
-              '<article class="card muted-card"><span class="badge">Coming soon</span><h2>' +
-              x.id +
-              ". " +
+              '<article class="card muted-card"><span class="ch-index" aria-hidden="true">' +
+              String(x.id).padStart(2, "0") +
+              '</span><span class="badge">Coming soon</span><h2>' +
               esc(x.title) +
               "</h2><p>Content will be added as the study guide grows.</p></article>"
             );
@@ -80,13 +80,9 @@
             gotchas = (x.chapter.gotchas || []).length,
             traps = (x.chapter.traps || []).length;
           return (
-            '<article class="card"><div class="card-top"><span class="badge">Chapter ' +
-            x.id +
-            '</span><span class="small">' +
-            read +
-            "/" +
-            notes +
-            " notes</span></div><h2>" +
+            '<article class="card"><span class="ch-index" aria-hidden="true">' +
+            String(x.id).padStart(2, "0") +
+            "</span><h2>" +
             esc(x.chapter.title) +
             '</h2><p class="small">Objectives: ' +
             x.chapter.objectiveIds.join(", ") +
@@ -104,9 +100,13 @@
             attempts +
             " attempts · " +
             (attempts ? Math.round((correct / attempts) * 100) : 0) +
-            '% correct</p><a class="button" href="#/ch/' +
+            '% correct</p><div class="card-foot"><a class="button" href="#/ch/' +
             x.id +
-            '">Start</a></article>'
+            '">Start</a><span class="small">' +
+            read +
+            "/" +
+            notes +
+            " notes read</span></div></article>"
           );
         })
         .join("");
@@ -746,44 +746,152 @@
       index = 0,
       flipped = false,
       filter = "all";
+
     function draw() {
       var x = cards[index] || cards[0];
       if (!x) {
         layout(
-          '<article class="card empty"><h2>No flashcards in this chapter yet</h2><p>Choose another chapter or return to all cards.</p></article>',
+          '<article class="card empty"><h2>No flashcards in this chapter yet</h2><p>Choose another chapter or return to all cards.</p><div class="button-row centered" style="margin-top:16px"><button class="button primary" id="resetFlashFilter">View all cards</button></div></article>',
           "Flashcards",
         );
+        var resetBtn = document.getElementById("resetFlashFilter");
+        if (resetBtn) {
+          resetBtn.onclick = function () {
+            filter = "all";
+            cards = allCards.slice();
+            index = 0;
+            flipped = false;
+            draw();
+          };
+        }
         return;
       }
+
+      var cardStatus = Store.get().flashcards[x.key] || "";
+      var statusBadge =
+        cardStatus === "got"
+          ? '<span class="flash-status-badge got">✓ Mastered</span>'
+          : cardStatus === "again"
+            ? '<span class="flash-status-badge again">↺ Reviewing</span>'
+            : '<span class="flash-status-badge new">Unreviewed</span>';
+
+      var progressPct = Math.round(((index + 1) / cards.length) * 100);
+
       layout(
-        '<div class="flash-toolbar"><label>Chapter <select id="flashFilter"><option value="all">All chapters</option>' +
-          OCP.chapters
-            .filter(function (c) {
-              return (c.gotchas || []).length;
-            })
-            .map(function (c) {
-              return (
-                '<option value="' +
-                c.id +
-                '">' +
-                c.id +
-                ". " +
-                esc(c.title) +
-                "</option>"
-              );
-            })
-            .join("") +
-          '</select></label><button class="button" id="shuffleCards">Shuffle</button></div><article class="flashcard card ' +
+        '<div class="flashcards-wrapper">' +
+          '<div class="flash-toolbar">' +
+            '<div class="flash-toolbar-left">' +
+              '<label class="chapter-nav">' +
+                '<select id="flashFilter" aria-label="Filter flashcards by chapter">' +
+                  '<option value="all">All chapters (' +
+                  allCards.length +
+                  ")</option>" +
+                  OCP.chapters
+                    .filter(function (c) {
+                      return (c.gotchas || []).length;
+                    })
+                    .map(function (c) {
+                      return (
+                        '<option value="' +
+                        c.id +
+                        '">' +
+                        c.id +
+                        ". " +
+                        esc(c.title) +
+                        " (" +
+                        c.gotchas.length +
+                        ")</option>"
+                      );
+                    })
+                    .join("") +
+                "</select>" +
+              "</label>" +
+              '<button class="button" id="shuffleCards" title="Shuffle cards">' +
+                '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>' +
+                "Shuffle" +
+              "</button>" +
+            "</div>" +
+            '<div class="flash-progress-info">' +
+              '<span class="flash-counter">Card <strong>' +
+              (index + 1) +
+              "</strong> of <strong>" +
+              cards.length +
+              "</strong></span>" +
+              statusBadge +
+            "</div>" +
+            '<div class="flash-toolbar-right">' +
+              '<button class="button small-button" id="prevCard" ' +
+              (index === 0 ? "disabled" : "") +
+              ' title="Previous card">← Prev</button>' +
+              '<button class="button small-button" id="nextCard" ' +
+              (index === cards.length - 1 ? "disabled" : "") +
+              ' title="Next card">Next →</button>' +
+            "</div>" +
+          "</div>" +
+          '<div class="progress flash-progress"><span style="width:' +
+          progressPct +
+          '%"></span></div>' +
+          '<article class="flashcard card ' +
           (flipped ? "flipped" : "") +
-          '" id="flashcard"><div class="flash-front"><span class="badge">Gotcha</span><h2>' +
+          '" id="flashcard" role="button" tabindex="0" aria-label="Flashcard: ' +
           esc(x.gotcha.title) +
-          '</h2><p>Think of the exam trap, then flip.</p></div><div class="flash-back"><h2>' +
-          esc(x.gotcha.title) +
-          "</h2>" +
-          renderMarkdown(x.gotcha.md) +
-          '</div></article><div class="button-row centered"><button class="button" id="again">Again</button><button class="button primary" id="gotit">Got it</button></div>',
+          '. Click to flip.">' +
+            '<div class="flash-front">' +
+              '<div class="flash-card-header">' +
+                '<span class="badge">Chapter ' +
+                x.chapter.id +
+                " · Exam Gotcha</span>" +
+              "</div>" +
+              '<div class="flash-card-body">' +
+                '<h2 class="flash-title">' +
+                esc(x.gotcha.title) +
+                "</h2>" +
+                '<p class="flash-sub">Think of the exam trap or rule, then flip to verify.</p>' +
+              "</div>" +
+              '<div class="flash-card-footer">' +
+                '<span class="flip-hint">' +
+                  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>' +
+                  "Click card or press Space to reveal answer" +
+                "</span>" +
+              "</div>" +
+            "</div>" +
+            '<div class="flash-back">' +
+              '<div class="flash-card-header">' +
+                '<span class="badge badge-success">Chapter ' +
+                x.chapter.id +
+                " · Answer & Key Rule</span>" +
+              "</div>" +
+              '<div class="flash-card-body">' +
+                '<h3 class="flash-title">' +
+                esc(x.gotcha.title) +
+                "</h3>" +
+                '<div class="note-content">' +
+                renderMarkdown(x.gotcha.md) +
+                "</div>" +
+              "</div>" +
+              '<div class="flash-card-footer">' +
+                '<span class="flip-hint">' +
+                  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>' +
+                  "Click card to flip back" +
+                "</span>" +
+              "</div>" +
+            "</div>" +
+          "</article>" +
+          '<div class="button-row centered flash-actions">' +
+            '<button class="button danger-button" id="again" title="Need review (Shortcut: 1 or Left Arrow)">' +
+              '↺ Review again <kbd class="kbd-hint">1</kbd>' +
+            "</button>" +
+            '<button class="button" id="flipBtn" title="Flip card (Shortcut: Space)">' +
+              '⇄ Flip card <kbd class="kbd-hint">Space</kbd>' +
+            "</button>" +
+            '<button class="button primary" id="gotit" title="Mastered (Shortcut: 2 or Right Arrow)">' +
+              '✓ Got it <kbd class="kbd-hint">2</kbd>' +
+            "</button>" +
+          "</div>" +
+        "</div>",
         "Flashcards",
       );
+
       document.getElementById("flashFilter").value = filter;
       document.getElementById("flashFilter").onchange = function () {
         filter = this.value;
@@ -797,10 +905,28 @@
         flipped = false;
         draw();
       };
-      document.getElementById("flashcard").onclick = function () {
+
+      var cardEl = document.getElementById("flashcard");
+      function toggleFlip() {
         flipped = !flipped;
-        draw();
+        if (cardEl) {
+          cardEl.classList.toggle("flipped", flipped);
+        }
+      }
+
+      cardEl.onclick = function (e) {
+        if (e.target.closest("button, a, input, select, .copy-btn")) return;
+        toggleFlip();
       };
+      cardEl.onkeydown = function (e) {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          toggleFlip();
+        }
+      };
+
+      document.getElementById("flipBtn").onclick = toggleFlip;
+
       document.getElementById("again").onclick = function () {
         Store.get().flashcards[x.key] = "again";
         Store.save();
@@ -808,6 +934,7 @@
         flipped = false;
         draw();
       };
+
       document.getElementById("gotit").onclick = function () {
         Store.get().flashcards[x.key] = "got";
         Store.save();
@@ -815,13 +942,37 @@
         flipped = false;
         draw();
       };
+
       document.getElementById("shuffleCards").onclick = function () {
         cards = cards.sort(function () {
           return Math.random() - 0.5;
         });
         index = 0;
+        flipped = false;
         draw();
       };
+
+      var prevBtn = document.getElementById("prevCard");
+      if (prevBtn) {
+        prevBtn.onclick = function () {
+          if (index > 0) {
+            index--;
+            flipped = false;
+            draw();
+          }
+        };
+      }
+
+      var nextBtn = document.getElementById("nextCard");
+      if (nextBtn) {
+        nextBtn.onclick = function () {
+          if (index < cards.length - 1) {
+            index++;
+            flipped = false;
+            draw();
+          }
+        };
+      }
     }
     if (!cards.length)
       return layout(
@@ -1043,6 +1194,27 @@
     else if (path[0] === "search") renderSearch(query.get("q"));
     else renderNotFound();
     updateScrollTop();
+    updateNavActive(path);
+  }
+  function updateNavActive(path) {
+    var navLinks = document.querySelectorAll(".site-header nav > a");
+    var current = location.hash.split("?")[0] || "#/";
+    navLinks.forEach(function (link) {
+      var href = link.getAttribute("href");
+      if (href === current || (current.indexOf(href) === 0 && href !== "#/")) {
+        link.classList.add("active");
+      } else {
+        link.classList.remove("active");
+      }
+    });
+    var chapterSelect = document.getElementById("chapterSelect");
+    if (chapterSelect) {
+      if (path && path[0] === "ch" && path[1]) {
+        chapterSelect.value = path[1];
+      } else {
+        chapterSelect.value = "";
+      }
+    }
   }
   var scrollTopBtn = document.getElementById("scrollTopBtn");
   var scrollTicking = false;
@@ -1108,11 +1280,34 @@
   cs.onchange = function () {
     if (this.value) location.hash = "#/ch/" + this.value;
   };
-  applyTheme(Store.get().theme || "auto");
+  applyTheme(Store.get().theme || "dark");
   applyHighlight(Store.get().highlight);
   window.addEventListener("hashchange", route);
   document.addEventListener("keydown", function (e) {
-    if (!activeQuiz || e.target.matches("input,textarea,select")) return;
+    if (e.target.matches("input,textarea,select")) return;
+    if (location.hash.indexOf("#/flashcards") === 0) {
+      if (e.key === " " || e.key === "Enter") {
+        var flipBtn = document.getElementById("flipBtn");
+        if (flipBtn) {
+          e.preventDefault();
+          flipBtn.click();
+        }
+      } else if (e.key === "1" || e.key === "ArrowLeft") {
+        var againBtn = document.getElementById("again");
+        if (againBtn) {
+          e.preventDefault();
+          againBtn.click();
+        }
+      } else if (e.key === "2" || e.key === "ArrowRight") {
+        var gotitBtn = document.getElementById("gotit");
+        if (gotitBtn) {
+          e.preventDefault();
+          gotitBtn.click();
+        }
+      }
+      return;
+    }
+    if (!activeQuiz) return;
     if (/^[1-5]$/.test(e.key) && !activeQuiz.checked) {
       var el = app.querySelectorAll("input[name=answer]")[Number(e.key) - 1];
       if (el) {
