@@ -1042,6 +1042,48 @@
     else if (path[0] === "coverage") renderCoverage();
     else if (path[0] === "search") renderSearch(query.get("q"));
     else renderNotFound();
+    updateScrollTop();
+  }
+  var scrollTopBtn = document.getElementById("scrollTopBtn");
+  var scrollTicking = false;
+  function updateScrollTop() {
+    if (!scrollTopBtn) return;
+    var y = window.scrollY || document.documentElement.scrollTop || 0;
+    if (y > 300) {
+      scrollTopBtn.classList.add("visible");
+    } else {
+      scrollTopBtn.classList.remove("visible");
+    }
+    scrollTicking = false;
+  }
+  if (scrollTopBtn) {
+    window.addEventListener(
+      "scroll",
+      function () {
+        if (!scrollTicking) {
+          (
+            window.requestAnimationFrame ||
+            function (cb) {
+              setTimeout(cb, 16);
+            }
+          )(updateScrollTop);
+          scrollTicking = true;
+        }
+      },
+      { passive: true },
+    );
+    scrollTopBtn.addEventListener("click", function () {
+      var smooth = !window.matchMedia("(prefers-reduced-motion: reduce)")
+        .matches;
+      try {
+        window.scrollTo({
+          top: 0,
+          behavior: smooth ? "smooth" : "auto",
+        });
+      } catch (e) {
+        window.scrollTo(0, 0);
+      }
+    });
   }
   document.getElementById("searchForm").onsubmit = function (e) {
     e.preventDefault();
