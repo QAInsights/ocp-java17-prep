@@ -24,8 +24,13 @@
         html += "</li></" + stack.pop().tag + ">";
         top = stack[stack.length - 1];
       }
-      if (top && item.indent === top.indent) html += "</li><li>";
-      else {
+      if (top && item.indent === top.indent && top.tag === item.tag)
+        html += "</li><li>";
+      else if (top && item.indent === top.indent) {
+        html += "</li></" + stack.pop().tag + ">";
+        html += "<" + item.tag + "><li>";
+        stack.push(item);
+      } else {
         html += "<" + item.tag + "><li>";
         stack.push(item);
       }
