@@ -14,6 +14,26 @@
       .replace(/\*([^*]+)\*/g, "<em>$1</em>")
       .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2">$1</a>');
   }
+  var LIST_ITEM = /^(\s*)([-*]|\d+\.)\s+(.*)$/;
+  function renderList(items) {
+    var html = "",
+      stack = [];
+    items.forEach(function (item) {
+      var top = stack[stack.length - 1];
+      while (top && item.indent < top.indent) {
+        html += "</li></" + stack.pop().tag + ">";
+        top = stack[stack.length - 1];
+      }
+      if (top && item.indent === top.indent) html += "</li><li>";
+      else {
+        html += "<" + item.tag + "><li>";
+        stack.push(item);
+      }
+      html += item.lines.map(inline).join("<br>");
+    });
+    while (stack.length) html += "</li></" + stack.pop().tag + ">";
+    return html;
+  }
   window.renderMarkdown = function (md, options) {
     var headingOffset = (options && options.headingOffset) || 0;
     var lines = String(md || "")
@@ -114,29 +134,22 @@
         );
         continue;
       }
-      if (/^[-*]\s+/.test(line) || /^\d+\.\s+/.test(line)) {
-        var ordered = /^\d+\./.test(line),
-          items = [];
-        while (
-          i < lines.length &&
-          (ordered ? /^\d+\.\s+/.test(lines[i]) : /^[-*]\s+/.test(lines[i]))
-        )
-          items.push(
-            lines[i++].replace(ordered ? /^\d+\.\s+/ : /^[-*]\s+/, ""),
-          );
-        out.push(
-          "<" +
-            (ordered ? "ol" : "ul") +
-            ">" +
-            items
-              .map(function (x) {
-                return "<li>" + inline(x) + "</li>";
-              })
-              .join("") +
-            "</" +
-            (ordered ? "ol" : "ul") +
-            ">",
-        );
+      if (LIST_ITEM.test(line)) {
+        var items = [];
+        while (i < lines.length && lines[i].trim() && !/^```/.test(lines[i])) {
+          var li = lines[i].match(LIST_ITEM);
+          if (li) {
+            items.push({
+              indent: li[1].length,
+              tag: /\d/.test(li[2]) ? "ol" : "ul",
+              lines: [li[3]],
+            });
+          } else if (items.length && /^\s/.test(lines[i])) {
+            items[items.length - 1].lines.push(lines[i].trim());
+          } else break;
+          i++;
+        }
+        out.push(renderList(items));
         continue;
       }
       var para = [line];
@@ -144,10 +157,10 @@
       while (
         i < lines.length &&
         lines[i].trim() &&
-        !/^(#{1,3})\s|^```|^>|^[-*]\s+|^\d+\.\s+|\|/.test(lines[i])
+        !/^(#{1,3})\s|^```|^>|^\s*[-*]\s+|^\s*\d+\.\s+|\|/.test(lines[i])
       )
         para.push(lines[i++]);
-      out.push("<p>" + inline(para.join("\n").replace(/\n/g, "<br>")) + "</p>");
+      out.push("<p>" + para.map(inline).join("<br>") + "</p>");
     }
     return out.join("");
   };
