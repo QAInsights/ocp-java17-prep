@@ -78,9 +78,8 @@
       if (list.indexOf(id) < 0) {
         list.push(id);
         save();
-        return true;
       }
-      return false;
+      return true;
     },
     checklist: function (ch, idx, value) {
       var list = state.checklist[ch] || (state.checklist[ch] = []);
