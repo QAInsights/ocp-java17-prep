@@ -198,3 +198,76 @@ code:not(.code code) {
   float: right;
   margin-bottom: 12px;
 }
+
+/* Table headers are uppercased; keep code identifiers in their real case */
+th code {
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+/* Lists and quotes inside rendered markdown */
+.note-content ul,
+.note-content ol,
+.explanation ul,
+.explanation ol {
+  margin: 0 0 12px;
+  padding-left: 1.4em;
+}
+
+.note-content li,
+.explanation li {
+  margin: 4px 0;
+}
+
+.note-content li > ul,
+.note-content li > ol {
+  margin: 4px 0 4px;
+}
+
+blockquote {
+  margin: 12px 0;
+  padding: 8px 14px;
+  border-left: 3px solid var(--primary);
+  background: var(--surface-elevated);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  color: var(--text-secondary);
+}
+
+/* Read state for notes */
+.note.is-read {
+  border-left: 3px solid var(--success);
+}
+
+.mark-note.is-read {
+  color: var(--success);
+  border-color: var(--success);
+}
+
+/* Long section lists must scroll instead of running off-screen */
+.toc {
+  max-height: calc(100vh - 96px);
+  overflow-y: auto;
+}
+
+/* Tall dialogs scroll on short screens */
+dialog {
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+}
+
+/* The header wraps onto several rows on narrow screens */
+@media (max-width: 960px) {
+  html {
+    scroll-padding-top: 130px;
+  }
+}
+
+/* Larger tap targets on touch devices */
+@media (pointer: coarse) {
+  .small-button {
+    min-height: 36px;
+  }
+  .toc a {
+    padding: 9px 10px;
+  }
+}
