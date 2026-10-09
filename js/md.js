@@ -48,12 +48,17 @@
       i = 0;
     while (i < lines.length) {
       var line = lines[i];
-      if (/^```/.test(line)) {
-        var lang = line.slice(3).trim(),
-          code = [];
+      var fence = line.match(/^\s*```(\w*)/);
+      if (fence) {
+        var fenceIndent = line.match(/^\s*/)[0].length,
+          lang = fence[1],
+          code = [],
+          dedent = new RegExp("^ {0," + fenceIndent + "}");
         i++;
-        while (i < lines.length && !/^```/.test(lines[i]))
-          code.push(lines[i++]);
+        while (i < lines.length && !/^\s*```\s*$/.test(lines[i])) {
+          code.push(lines[i].replace(dedent, ""));
+          i++;
+        }
         i++;
         out.push(
           lang === "java" && (window.highlightJava || typeof highlightJava !== "undefined")
@@ -141,7 +146,11 @@
       }
       if (LIST_ITEM.test(line)) {
         var items = [];
-        while (i < lines.length && lines[i].trim() && !/^```/.test(lines[i])) {
+        while (
+          i < lines.length &&
+          lines[i].trim() &&
+          !/^\s*```/.test(lines[i])
+        ) {
           var li = lines[i].match(LIST_ITEM);
           if (li) {
             items.push({
@@ -162,7 +171,9 @@
       while (
         i < lines.length &&
         lines[i].trim() &&
-        !/^(#{1,3})\s|^```|^>|^\s*[-*]\s+|^\s*\d+\.\s+|\|/.test(lines[i])
+        !/^(#{1,3})\s|^\s*```|^\s*>|^\s*[-*]\s+|^\s*\d+\.\s+|\|/.test(
+          lines[i],
+        )
       )
         para.push(lines[i++]);
       out.push("<p>" + para.map(inline).join("<br>") + "</p>");

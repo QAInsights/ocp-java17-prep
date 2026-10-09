@@ -2,7 +2,8 @@
   "use strict";
   var app = document.getElementById("app"),
     activeQuiz = null,
-    examTimer = null;
+    examTimer = null,
+    suppressedAutoRead = false;
   function esc(s) {
     return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
@@ -12,6 +13,12 @@
     return OCP.chapters.find(function (c) {
       return c.id === Number(id);
     });
+  }
+  function noteTitle(c, noteId) {
+    var n = (c.notes || []).find(function (x) {
+      return String(x.id) === String(noteId);
+    });
+    return n ? n.title : noteId;
   }
   function allPlanned() {
     return OCP.plannedChapters.map(function (p) {
@@ -320,8 +327,7 @@
     );
     app.querySelectorAll(".mark-note").forEach(function (b) {
       b.onclick = function () {
-        Store.toggleNote(c.id, b.dataset.note);
-        renderChapter(c.id, "notes");
+        syncNoteReadUI(c, b.dataset.note, Store.toggleNote(c.id, b.dataset.note));
       };
     });
     app.querySelectorAll(".reveal").forEach(function (b) {
@@ -341,23 +347,39 @@
       var observer = new IntersectionObserver(
         function (entries) {
           entries.forEach(function (entry) {
-            if (entry.isIntersecting) {
-              var note = entry.target.id.slice(5),
-                read = Store.get().notesRead[c.id] || [];
-              if (read.indexOf(note) < 0) {
-                Store.toggleNote(c.id, note);
-                entry.target.querySelector(".mark-note").textContent =
-                  "Marked read";
-              }
-            }
+            if (!entry.isIntersecting) return;
+            observer.unobserve(entry.target);
+            if (suppressedAutoRead) return;
+            syncNoteReadUI(c, entry.target.id.slice(5));
           });
         },
-        { threshold: 0.6 },
+        { threshold: 0.35 },
       );
       app.querySelectorAll(".note").forEach(function (note) {
         observer.observe(note);
       });
     }
+  }
+  function syncNoteReadUI(c, noteId, read) {
+    var known =
+      typeof read === "boolean"
+        ? read
+        : Store.markNoteRead(c.id, noteId);
+    var article = document.getElementById("note-" + noteId);
+    var btn = article
+      ? article.querySelector(".mark-note")
+      : app.querySelector('.mark-note[data-note="' + noteId + '"]');
+    if (btn) {
+      btn.textContent = known ? "Marked read" : "Mark read";
+      btn.classList.toggle("is-read", known);
+    }
+    if (article) article.classList.toggle("is-read", known);
+    var link = app.querySelector('.toc a[href="#note-' + noteId + '"]');
+    if (link) {
+      link.classList.toggle("read", known);
+      link.innerHTML = (known ? "✓ " : "") + esc(noteTitle(c, noteId));
+    }
+    return known;
   }
   function renderQuiz(mode, id) {
     var questions =
@@ -1184,7 +1206,17 @@
       activeQuiz = null;
     }
     if (path[0] === "") renderDashboard();
-    else if (path[0] === "ch") renderChapter(path[1], path[2]);
+    else if (path[0] === "ch") {
+      suppressedAutoRead = /^#note-/.test(window.location.hash || "");
+      renderChapter(path[1], path[2]);
+      suppressedAutoRead = false;
+      var anchor = (window.location.hash || "").match(/^#note-(.+)$/);
+      if (anchor && document.getElementById("note-" + anchor[1])) {
+        document
+          .getElementById("note-" + anchor[1])
+          .scrollIntoView({ block: "start" });
+      }
+    }
     else if (path[0] === "quiz")
       renderQuiz(path[1] === "ch" ? "ch" : path[1], path[2]);
     else if (path[0] === "exam") renderExam();

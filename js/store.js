@@ -1,7 +1,6 @@
 (function () {
   "use strict";
-  var key = "ocp17.state.v1",
-    timer;
+  var key = "ocp17.state.v1";
   var initial = function () {
     return {
       theme: "dark",
@@ -22,10 +21,11 @@
     state = initial();
   }
   function save() {
-    clearTimeout(timer);
-    timer = setTimeout(function () {
+    try {
       localStorage.setItem(key, JSON.stringify(state));
-    }, 100);
+    } catch (ignore) {
+      void ignore;
+    }
   }
   window.Store = {
     get: function () {
@@ -60,11 +60,27 @@
       return q.bookmarked;
     },
     toggleNote: function (ch, id) {
+      id = String(id);
       var list = state.notesRead[ch] || (state.notesRead[ch] = []),
         n = list.indexOf(id);
-      if (n < 0) list.push(id);
-      else list.splice(n, 1);
+      if (n < 0) {
+        list.push(id);
+        save();
+        return true;
+      }
+      list.splice(n, 1);
       save();
+      return false;
+    },
+    markNoteRead: function (ch, id) {
+      id = String(id);
+      var list = state.notesRead[ch] || (state.notesRead[ch] = []);
+      if (list.indexOf(id) < 0) {
+        list.push(id);
+        save();
+        return true;
+      }
+      return false;
     },
     checklist: function (ch, idx, value) {
       var list = state.checklist[ch] || (state.checklist[ch] = []);
