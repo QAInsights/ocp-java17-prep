@@ -585,7 +585,7 @@
       questions: Quiz.exam(),
       index: 0,
       answers: {},
-      checked: false,
+      checked: {},
       exam: true,
       started: Date.now(),
     };
@@ -599,13 +599,71 @@
   function renderExamQuestion() {
     var q = activeQuiz.questions[activeQuiz.index],
       chosen = activeQuiz.answers[q.id] || [],
-      questionText = q.question.replace(/\s*\(Choose all that apply\.\)/, "");
+      checked = !!activeQuiz.checked[q.id],
+      instantAnswers = !!Store.get().instantAnswers,
+      questionText = q.question.replace(/\s*\(Choose all that apply\.\)/, ""),
+      isCorrect =
+        checked &&
+        chosen.length === q.answer.length &&
+        chosen.every(function (x) {
+          return q.answer.indexOf(x) >= 0;
+        });
+    var opts = q.options
+      .map(function (o, i) {
+        var selected = chosen.indexOf(i) >= 0,
+          cls =
+            checked && q.answer.indexOf(i) >= 0
+              ? " correct"
+              : checked && selected
+                ? " incorrect"
+                : "";
+        return (
+          '<label class="option' +
+          cls +
+          '"><input type="' +
+          (q.type === "multi" ? "checkbox" : "radio") +
+          '" name="answer" value="' +
+          i +
+          '" ' +
+          (selected ? "checked" : "") +
+          " " +
+          (checked ? "disabled" : "") +
+          '><span class="option-letter">' +
+          String.fromCharCode(65 + i) +
+          "</span><span>" +
+          renderMarkdown(o) +
+          (checked && q.optionNotes && q.optionNotes[i]
+            ? "<small>" + renderMarkdown(q.optionNotes[i]) + "</small>"
+            : "") +
+          "</span>" +
+          (checked
+            ? q.answer.indexOf(i) >= 0
+              ? '<span class="verdict verdict-correct">✓ Correct</span>'
+              : selected
+                ? '<span class="verdict verdict-wrong">✗ Your pick</span>'
+                : ""
+            : "") +
+          "</label>"
+        );
+      })
+      .join("");
+    var footer = checked
+      ? '<div class="feedback ' +
+        (isCorrect ? "success" : "danger") +
+        '"><strong>' +
+        (isCorrect ? "Correct" : "Not quite") +
+        "</strong>" +
+        renderMarkdown(q.explanation) +
+        "</div>"
+      : "";
     layout(
       '<div class="quiz-meta"><span>Mock exam · ' +
         (activeQuiz.index + 1) +
         "/" +
         activeQuiz.questions.length +
-        '</span><strong id="examClock">90:00</strong></div><article class="quiz-card card"><div class="question">' +
+        '</span><strong id="examClock">90:00</strong><label class="toggle"><input type="checkbox" id="instantToggle" ' +
+        (instantAnswers ? "checked" : "") +
+        '> Instant answers</label></div><article class="quiz-card card"><div class="question">' +
         renderMarkdown(questionText) +
         '<p class="select-hint">Select ' +
         (q.type === "multi" ? q.answer.length : 1) +
@@ -614,28 +672,22 @@
         "</div>" +
         (q.code ? highlightJava(q.code) : "") +
         '<div class="options">' +
-        q.options
-          .map(function (o, i) {
-            return (
-              '<label class="option"><input type="' +
-              (q.type === "multi" ? "checkbox" : "radio") +
-              '" name="answer" value="' +
-              i +
-              '" ' +
-              (chosen.indexOf(i) >= 0 ? "checked" : "") +
-              '><span class="option-letter">' +
-              String.fromCharCode(65 + i) +
-              "</span><span>" +
-              renderMarkdown(o) +
-              "</span></label>"
-            );
-          })
-          .join("") +
-        '</div><div class="button-row"><button class="button" id="examPrev">Previous</button><button class="button primary" id="examNext">' +
+        opts +
+        "</div>" +
+        footer +
+        '<div class="button-row"><button class="button" id="examPrev">Previous</button>' +
+        (checked
+          ? ""
+          : '<button class="button primary" id="checkAnswer" ' +
+            (chosen.length ? "" : "disabled") +
+            ">" +
+            (instantAnswers ? "Submit" : "Check") +
+            "</button>") +
+        '<button class="button primary" id="examNext">' +
         (activeQuiz.index + 1 === activeQuiz.questions.length
           ? "Submit exam"
           : "Save & next") +
-        '</button></div></article><p class="muted">Feedback is hidden until you submit. Leaving this page will ask for confirmation.</p>',
+        '</button></div></article><p class="muted">Leaving this page will ask for confirmation.</p>',
       "Mock exam",
     );
     app.querySelectorAll("input[name=answer]").forEach(function (input) {
@@ -649,8 +701,27 @@
             return x !== n;
           });
         activeQuiz.answers[q.id] = a;
+        var submit = document.getElementById("checkAnswer");
+        if (submit) submit.disabled = !a.length;
       };
     });
+    document.getElementById("instantToggle").onchange = function () {
+      Store.get().instantAnswers = this.checked;
+      Store.save();
+      renderExamQuestion();
+    };
+    document.getElementById("checkAnswer") &&
+      (document.getElementById("checkAnswer").onclick = function () {
+        var a = activeQuiz.answers[q.id] || [],
+          good =
+            a.length === q.answer.length &&
+            a.every(function (x) {
+              return q.answer.indexOf(x) >= 0;
+            });
+        Store.answered(q.id, a, good);
+        activeQuiz.checked[q.id] = true;
+        renderExamQuestion();
+      });
     document.getElementById("examPrev").onclick = function () {
       if (activeQuiz.index) {
         activeQuiz.index--;
@@ -1340,13 +1411,17 @@
       return;
     }
     if (!activeQuiz) return;
-    if (/^[1-5]$/.test(e.key) && !activeQuiz.checked) {
+    var examChecked = activeQuiz.exam
+      ? !!(activeQuiz.checked && activeQuiz.checked[activeQuiz.questions[activeQuiz.index].id])
+      : false;
+    var isChecked = activeQuiz.exam ? examChecked : !!activeQuiz.checked;
+    if (/^[1-5]$/.test(e.key) && !isChecked) {
       var el = app.querySelectorAll("input[name=answer]")[Number(e.key) - 1];
       if (el) {
         el.click();
       }
     }
-    if (e.key.toLowerCase() === "b") {
+    if (e.key.toLowerCase() === "b" && !activeQuiz.exam) {
       var q = activeQuiz.questions[activeQuiz.index];
       Store.toggleBookmark(q.id);
       renderQuestion();
@@ -1354,7 +1429,11 @@
     if (e.key === "Enter") {
       e.preventDefault();
       var b = document.getElementById(
-        activeQuiz.checked ? "nextQuestion" : "checkAnswer",
+        isChecked
+          ? activeQuiz.exam
+            ? "examNext"
+            : "nextQuestion"
+          : "checkAnswer",
       );
       if (b) b.click();
     }
