@@ -510,6 +510,7 @@
         activeQuiz.answers[q.id] = a;
         var submit = document.getElementById("checkAnswer");
         if (submit) submit.disabled = !a.length;
+        saveExamProgress();
       };
     });
     document.getElementById("instantToggle").onchange = function () {
@@ -580,7 +581,91 @@
       "Quiz summary",
     );
   }
+  var EXAM_SAVE_KEY = "ocp17.exam.v1";
+  function examQuestionMap() {
+    var m = {};
+    (OCP.chapters || []).forEach(function (c) {
+      (c.questions || []).forEach(function (q) {
+        m[q.id] = q;
+      });
+    });
+    return m;
+  }
+  function saveExamProgress() {
+    if (!activeQuiz || !activeQuiz.exam) return;
+    try {
+      localStorage.setItem(
+        EXAM_SAVE_KEY,
+        JSON.stringify({
+          ids: activeQuiz.questions.map(function (q) {
+            return q.id;
+          }),
+          index: activeQuiz.index,
+          answers: activeQuiz.answers,
+          checked: activeQuiz.checked,
+          started: activeQuiz.started,
+        }),
+      );
+    } catch (e) {
+      void e;
+    }
+  }
+  function loadExamProgress() {
+    try {
+      return JSON.parse(localStorage.getItem(EXAM_SAVE_KEY));
+    } catch (e) {
+      return null;
+    }
+  }
+  function clearExamProgress() {
+    try {
+      localStorage.removeItem(EXAM_SAVE_KEY);
+    } catch (e) {
+      void e;
+    }
+  }
+  function resumeExam(saved) {
+    var m = examQuestionMap();
+    var qs = (saved.ids || []).map(function (id) {
+      return m[id];
+    });
+    if (qs.length !== (saved.ids || []).length || !qs.length) return false;
+    activeQuiz = {
+      questions: qs,
+      index: Math.min(saved.index || 0, qs.length - 1),
+      answers: saved.answers || {},
+      checked: saved.checked || {},
+      exam: true,
+      started: saved.started || Date.now(),
+    };
+    renderExamQuestion();
+    return true;
+  }
   function renderExam() {
+    var saved = loadExamProgress();
+    if (saved && saved.ids && saved.ids.length) {
+      var m = examQuestionMap();
+      var ok = saved.ids.every(function (id) {
+        return !!m[id];
+      });
+      if (ok) {
+        layout(
+          '<article class="card"><h2>Resume saved exam?</h2><p>You have an in-progress mock exam saved in this browser.</p><div class="button-row"><button class="button primary" id="resumeExam">Resume exam</button><button class="button" id="newExam">Start new exam</button></div></article>',
+          "Mock exam",
+        );
+        document.getElementById("resumeExam").onclick = function () {
+          resumeExam(saved);
+        };
+        document.getElementById("newExam").onclick = function () {
+          clearExamProgress();
+          startNewExam();
+        };
+        return;
+      }
+    }
+    startNewExam();
+  }
+  function startNewExam() {
     activeQuiz = {
       questions: Quiz.exam(),
       index: 0,
@@ -594,6 +679,7 @@
         '<article class="card"><h2>No exam questions yet</h2></article>',
         "Mock exam",
       );
+    saveExamProgress();
     renderExamQuestion();
   }
   function renderExamQuestion() {
@@ -661,7 +747,21 @@
         (activeQuiz.index + 1) +
         "/" +
         activeQuiz.questions.length +
-        '</span><strong id="examClock">90:00</strong><label class="toggle"><input type="checkbox" id="instantToggle" ' +
+         '</span><strong id="examClock">90:00</strong><select id="examJump">' +
+         activeQuiz.questions
+           .map(function (qq, i) {
+             return (
+               '<option value="' +
+               i +
+               '"' +
+               (i === activeQuiz.index ? " selected" : "") +
+               ">Q" +
+               (i + 1) +
+               "</option>"
+             );
+           })
+           .join("") +
+         '</select><label class="toggle"><input type="checkbox" id="instantToggle" ' +
         (instantAnswers ? "checked" : "") +
         '> Instant answers</label></div><article class="quiz-card card"><div class="question">' +
         renderMarkdown(questionText) +
@@ -703,6 +803,7 @@
         activeQuiz.answers[q.id] = a;
         var submit = document.getElementById("checkAnswer");
         if (submit) submit.disabled = !a.length;
+        saveExamProgress();
       };
     });
     document.getElementById("instantToggle").onchange = function () {
@@ -710,6 +811,12 @@
       Store.save();
       renderExamQuestion();
     };
+    var jump = document.getElementById("examJump");
+    if (jump)
+      jump.onchange = function () {
+        activeQuiz.index = Number(this.value);
+        renderExamQuestion();
+      };
     document.getElementById("checkAnswer") &&
       (document.getElementById("checkAnswer").onclick = function () {
         var a = activeQuiz.answers[q.id] || [],
@@ -720,6 +827,7 @@
             });
         Store.answered(q.id, a, good);
         activeQuiz.checked[q.id] = true;
+        saveExamProgress();
         renderExamQuestion();
       });
     document.getElementById("examPrev").onclick = function () {
@@ -746,6 +854,7 @@
           Math.floor(left / 60) + ":" + String(left % 60).padStart(2, "0");
       if (!left) submitExam();
     }, 1000);
+    saveExamProgress();
   }
   function submitExam() {
     clearInterval(examTimer);
@@ -825,6 +934,7 @@
         '</ul><p>Every answer has been recorded. Use Retry missed for targeted review.</p><a class="button primary" href="#/">Dashboard</a></article>',
       "Mock exam complete",
     );
+    clearExamProgress();
     activeQuiz = null;
   }
   function renderFlashcards() {
